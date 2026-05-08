@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx nuxi@latest init app --packageManager npm --no-gitInit)",
+      "Bash(rm -rf app)",
+      "Bash(npx nuxi@latest init app --packageManager npm --no-gitInit --template ui)",
+      "Bash(npx nuxi@latest init app --packageManager npm --no-gitInit --template ui --force)",
+      "Bash(npx nuxi@latest init app --packageManager npm --no-gitInit --template minimal)",
+      "Bash(npm install:*)",
+      "Bash(cp ../img/bg.jpg public/)",
+      "Bash(cp ../img/federation.png public/)",
+      "Bash(npx nuxt:*)",
+      "Bash(mv app/.gitignore .)",
+      "Bash(mv app/.nuxt .)",
+      "Bash(mv app/README.md .)",
+      "Bash(mv app/assets .)",
+      "Bash(mv app/nuxt.config.ts .)",
+      "Bash(cp -r app/.gitignore app/README.md app/nuxt.config.ts app/package-lock.json app/package.json app/tsconfig.json .)",
+      "Bash(cp -r app/assets .)",
+      "Bash(cp -r app/public .)",
+      "Bash(cp -r app/app .)",
+      "Bash(cp -r app/node_modules .)",
+      "Bash(mkdir -p app/components app/layouts app/pages)",
+      "Bash(mv assets:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(gh auth *)",
+      "PowerShell(gh auth *)",
+      "PowerShell(git *)"
+    ]
+  }
+}

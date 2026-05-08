@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eagles — American Football Team</title>
+    <link rel="icon" type="image/jpeg" href="photo/eagles.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="loader-field">
+            <svg class="field-svg" viewBox="0 0 600 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="580" height="340" rx="8" stroke="#1a5c2a" stroke-width="2" fill="none" opacity="0.3"/>
+                <line x1="300" y1="10" x2="300" y2="350" stroke="#1a5c2a" stroke-width="2" opacity="0.3"/>
+                <circle cx="300" cy="180" r="50" stroke="#1a5c2a" stroke-width="2" fill="none" opacity="0.3"/>
+                <rect x="10" y="10" width="70" height="340" rx="4" stroke="#1a5c2a" stroke-width="1.5" fill="#1a5c2a" opacity="0.05"/>
+                <rect x="520" y="10" width="70" height="340" rx="4" stroke="#1a5c2a" stroke-width="1.5" fill="#1a5c2a" opacity="0.05"/>
+                <line x1="140" y1="10" x2="140" y2="350" stroke="#1a5c2a" stroke-width="1" opacity="0.2"/>
+                <line x1="200" y1="10" x2="200" y2="350" stroke="#1a5c2a" stroke-width="1" opacity="0.2"/>
+                <line x1="260" y1="10" x2="260" y2="350" stroke="#1a5c2a" stroke-width="1" opacity="0.2"/>
+                <line x1="340" y1="10" x2="340" y2="350" stroke="#1a5c2a" stroke-width="1" opacity="0.2"/>
+                <line x1="400" y1="10" x2="400" y2="350" stroke="#1a5c2a" stroke-width="1" opacity="0.2"/>
+                <line x1="460" y1="10" x2="460" y2="350" stroke="#1a5c2a" stroke-width="1" opacity="0.2"/>
+                <line x1="140" y1="130" x2="140" y2="140" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="200" y1="130" x2="200" y2="140" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="260" y1="130" x2="260" y2="140" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="340" y1="130" x2="340" y2="140" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="400" y1="130" x2="400" y2="140" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="460" y1="130" x2="460" y2="140" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="140" y1="220" x2="140" y2="230" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="200" y1="220" x2="200" y2="230" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="260" y1="220" x2="260" y2="230" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="340" y1="220" x2="340" y2="230" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="400" y1="220" x2="400" y2="230" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+                <line x1="460" y1="220" x2="460" y2="230" stroke="#1a5c2a" stroke-width="3" opacity="0.3"/>
+            </svg>
+        </div>
+        <div class="loader-logo">
+            <img src="photo/eagles.jpg" alt="Eagles Logo">
+        </div>
+        <div class="loader-text">EAGLES</div>
+        <div class="loader-bar">
+            <div class="loader-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- MAIN SITE -->
+    <div id="site" class="hidden">
+
+        <!-- NAVIGATION -->
+        <nav id="navbar">
+            <div class="nav-logo">
+                <img src="photo/eagles.jpg" alt="Eagles">
+                <span>EAGLES</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#team">Team</a></li>
+                <li><a href="#federation">GAFF</a></li>
+                <li><a href="#youtube">YouTube</a></li>
+            </ul>
+        </nav>
+
+        <!-- HERO -->
+        <section id="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-particles" id="particles"></div>
+            <div class="hero-content">
+                <img src="photo/eagles.jpg" alt="Eagles" class="hero-logo">
+                <h1 class="hero-title">EAGLES</h1>
+                <p class="hero-subtitle">AMERICAN FOOTBALL TEAM</p>
+                <div class="hero-divider"></div>
+                <a href="#team" class="hero-cta">MEET THE TEAM</a>
+            </div>
+            <div class="scroll-indicator">
+                <div class="scroll-arrow"></div>
+            </div>
+        </section>
+
+        <!-- TEAM -->
+        <section id="team">
+            <div class="section-header">
+                <h2 class="section-title">THE ROSTER</h2>
+                <div class="section-line"></div>
+                <p class="section-subtitle">Our warriors on the field</p>
+            </div>
+
+            <div class="players-grid">
+
+                <div class="player-card" data-player="alex">
+                    <div class="card-image-wrapper">
+                        <img src="photo/alex1.jpg" alt="Alex" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">ALEX</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+                <div class="player-card" data-player="bacho">
+                    <div class="card-image-wrapper">
+                        <img src="photo/bacho1.jpg" alt="Bacho" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">BACHO</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+                <div class="player-card" data-player="boi">
+                    <div class="card-image-wrapper">
+                        <img src="photo/boi1.jpg" alt="Boi" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">BOI</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+                <div class="player-card" data-player="gagosha">
+                    <div class="card-image-wrapper">
+                        <img src="photo/gagosha1.jpg" alt="Gagosha" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">GAGOSHA</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+                <div class="player-card" data-player="ilo">
+                    <div class="card-image-wrapper">
+                        <img src="photo/ilo1.jpg" alt="Ilo" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">ILO</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+                <div class="player-card" data-player="lasha">
+                    <div class="card-image-wrapper">
+                        <img src="photo/lasha2.jpg" alt="Lasha" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">LASHA</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+                <div class="player-card" data-player="luka">
+                    <div class="card-image-wrapper">
+                        <img src="photo/luka1.jpg" alt="Luka" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">LUKA</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+                <div class="player-card" data-player="mamuk">
+                    <div class="card-image-wrapper">
+                        <img src="photo/mamuk1.jpg" alt="Mamuk" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">MAMUK</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+                <div class="player-card" data-player="puzan">
+                    <div class="card-image-wrapper">
+                        <img src="photo/puzan1.jpg" alt="Puzan" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">PUZAN</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+                <div class="player-card" data-player="saba">
+                    <div class="card-image-wrapper">
+                        <img src="photo/saba1.jpg" alt="Saba" class="card-image">
+                        <div class="card-glare"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="player-name">SABA</h3>
+                        <div class="card-stripe"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PLAYER MODAL -->
+        <div id="player-modal" class="modal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <button class="modal-close">&times;</button>
+                <div class="modal-layout">
+                    <div class="modal-photos">
+                        <div class="modal-main-photo">
+                            <img id="modal-main-img" src="" alt="">
+                            <button class="photo-nav photo-prev">&#10094;</button>
+                            <button class="photo-nav photo-next">&#10095;</button>
+                            <div class="photo-counter"><span id="photo-current">1</span> / <span id="photo-total">3</span></div>
+                        </div>
+                        <div class="modal-thumbs" id="modal-thumbs"></div>
+                    </div>
+                    <div class="modal-info">
+                        <h2 class="modal-player-name" id="modal-name"></h2>
+                        <div class="modal-divider"></div>
+                        <p class="modal-bio" id="modal-bio"></p>
+                        <div class="modal-divider-sm"></div>
+                        <ul class="modal-achievements" id="modal-achievements"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEDERATION -->
+        <section id="federation">
+            <div class="section-header">
+                <h2 class="section-title">GEORGIAN AMERICAN FOOTBALL FEDERATION</h2>
+                <div class="section-line"></div>
+                <p class="section-subtitle">GAFF — საქართველოს ამერიკული ფეხბურთის ფედერაცია</p>
+            </div>
+
+            <div class="federation-content">
+                <div class="federation-logo-wrapper">
+                    <div class="federation-logo-glow"></div>
+                    <div class="federation-logo-ring"></div>
+                    <img src="photo/federation.png" alt="GAFF" class="federation-logo" id="federation-logo">
+                </div>
+
+                <div class="federation-history">
+                    <div class="timeline">
+
+                        <div class="timeline-item" data-year="2014">
+                            <div class="timeline-year">2014</div>
+                            <div class="timeline-content">
+                                <h3>დასაწყისი</h3>
+                                <p>საქართველოში ამერიკული ფეხბურთის პირველი ნაბიჯები. ენთუზიასტთა მცირე ჯგუფმა თბილისში დაიწყო ვარჯიშები — მაშინ ბევრმა არც იცოდა რა იყო ამერიკული ფეხბურთი. სპორტი ნულიდან იწყებოდა, ტაქტიკურ ფილოსოფიას YouTube-ით სწავლობდნენ.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" data-year="2016">
+                            <div class="timeline-year">2016</div>
+                            <div class="timeline-content">
+                                <h3>პირველი ჩემპიონატი</h3>
+                                <p>ჩამოყალიბდა საქართველოს ამერიკული ფეხბურთის ფედერაცია (GAFF) და ჩატარდა პირველი ოფიციალური ეროვნული ჩემპიონატი. სამი გუნდი — Eagles, Argonauts და Gladiators — გამოვიდა მოედანზე. ისტორია დაიწერა.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" data-year="2017">
+                            <div class="timeline-year">2017</div>
+                            <div class="timeline-content">
+                                <h3>ლიგის გაფართოება</h3>
+                                <p>ლიგას ახალი გუნდები შეუერთდნენ. ჩემპიონატმა მეტი ყურადღება მიიპყრო — მოთამაშეების რაოდენობა გაორმაგდა, ტურნირები უფრო კონკურენტუნარიანი გახდა. Eagles-მა თავისი პირველი ჩემპიონობა მოიპოვა!</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" data-year="2021">
+                            <div class="timeline-year">2021</div>
+                            <div class="timeline-content">
+                                <h3>აღორძინება</h3>
+                                <p>პანდემიის შემდეგ სპორტი კიდევ უფრო ძლიერად დაბრუნდა. Eagles-მა მეორე ჩემპიონობა მოიგო. ფედერაციამ დაიწყო საერთაშორისო კონტაქტების დამყარება და ფლეგ ფეხბურთის განვითარება.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" data-year="2023">
+                            <div class="timeline-year">2023</div>
+                            <div class="timeline-content">
+                                <h3>საერთაშორისო ასპარეზი</h3>
+                                <p>საქართველოს ეროვნულმა ნაკრებმა პირველად მიიღო მონაწილეობა ევროპის ჩემპიონატში ირლანდიაში (ლიმერიკი). ქართული დროშა აფრიალდა საერთაშორისო ამერიკული ფეხბურთის ასპარეზზე — ისტორიული მომენტი!</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" data-year="2024">
+                            <div class="timeline-year">2024</div>
+                            <div class="timeline-content">
+                                <h3>მსოფლიო ჩემპიონატი & Black Sea Bowl</h3>
+                                <p>ნაკრებმა მსოფლიო ჩემპიონატზე იასპარეზა ფინეთში (ლაჰტი). საქართველოში ჩატარდა პირველი "Black Sea Bowl" — საერთაშორისო ტურნირი, რომელიც Eagles-მა მოიგო. აბუ-დაბიში 'ოაზისის თასზე' ვერცხლის მედალი მოიპოვეს.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" data-year="2025">
+                            <div class="timeline-year">2025</div>
+                            <div class="timeline-content">
+                                <h3>ევროპის ჩემპიონატი — პარიზი</h3>
+                                <p>საქართველოს ეროვნულმა ნაკრებმა ევროპის ჩემპიონატზე იასპარეზა საფრანგეთში (პარიზი). ფლეგ ფეხბურთის ეროვნული ჩემპიონატი, რუსთავისა და თბილისის თასები — Eagles-მა ყველა ტიტული მოიგო!</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" data-year="2026">
+                            <div class="timeline-year">2026</div>
+                            <div class="timeline-content">
+                                <h3>ახალი ეპოქა</h3>
+                                <p>Eagles — საქართველოს ეროვნული ჩემპიონი 2026! ფედერაცია აგრძელებს ზრდას — ახალი გუნდები, ახალი მოთამაშეები, ახალი ამბიციები. ამერიკული ფეხბურთი საქართველოში უკვე აღარ არის ეგზოტიკა — ეს არის ვნება. 🦅</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- YOUTUBE -->
+        <section id="youtube">
+            <div class="section-header">
+                <h2 class="section-title">WE ON YOUTUBE</h2>
+                <div class="section-line"></div>
+                <p class="section-subtitle">ჩვენი საუკეთესო მომენტები</p>
+            </div>
+
+            <div class="youtube-grid">
+                <div class="youtube-card">
+                    <div class="youtube-video">
+                        <iframe src="https://www.youtube.com/embed/eJv9pQRGQfo" title="Eagles Video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+                <div class="youtube-card">
+                    <div class="youtube-video">
+                        <iframe src="https://www.youtube.com/embed/A4UPlId2sKI" title="Eagles Video 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+                <div class="youtube-card">
+                    <div class="youtube-video">
+                        <iframe src="https://www.youtube.com/embed/pG6XFZDeeOQ" title="Eagles Video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+                <div class="youtube-card">
+                    <div class="youtube-video">
+                        <iframe src="https://www.youtube.com/embed/QNeo3-ncfMk" title="Eagles Video 4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="footer-content">
+                <img src="photo/eagles.jpg" alt="Eagles" class="footer-logo">
+                <p class="footer-text">EAGLES FOOTBALL &copy; 2026</p>
+                <p class="footer-motto">FLY EAGLES FLY</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="players.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
