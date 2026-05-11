@@ -14,7 +14,7 @@ export default defineNuxtConfig({
       title: 'GAFF - საქართველოს ამერიკული ფეხბურთის ფედერაცია',
       htmlAttrs: { lang: 'ka' },
       meta: [
-        { name: 'description', content: 'საქართველოს ამერიკული ფეხბურთის ფედერაცია - Georgian American Football Federation' }
+        { name: 'description', content: 'საქართველოს ამერიკული ფეხბურთის ფედერაცია - American Football Federation of Georgia' }
       ]
     }
   }

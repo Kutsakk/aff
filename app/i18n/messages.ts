@@ -55,7 +55,7 @@ export const messages: Record<Locale, Messages> = {
     },
     hero: {
       title: 'საქართველოს ამერიკული ფეხბურთის ფედერაცია',
-      subtitle: 'Georgian American Football Federation',
+      subtitle: 'American Football Federation of Georgia',
       aboutBtn: 'ჩვენს შესახებ',
       eventsBtn: 'ღონისძიებები',
     },
@@ -70,7 +70,7 @@ export const messages: Record<Locale, Messages> = {
     about: {
       title: 'ჩვენს შესახებ',
       federationName: 'საქართველოს ამერიკული ფეხბურთის ფედერაცია',
-      p1: 'GAFF (Georgian American Football Federation) — საქართველოში ამერიკული ფეხბურთის განვითარებისა და პოპულარიზაციისთვის შექმნილი ფედერაცია. ჩვენი მიზანია სპორტის ამ სახეობის წინსვლა ქართულ საზოგადოებაში.',
+      p1: 'GAFF (American Football Federation of Georgia) — საქართველოში ამერიკული ფეხბურთის განვითარებისა და პოპულარიზაციისთვის შექმნილი ფედერაცია. ჩვენი მიზანია სპორტის ამ სახეობის წინსვლა ქართულ საზოგადოებაში.',
       p2: 'ფედერაცია აერთიანებს გუნდებს მთელი საქართველოდან, ორგანიზებას უწევს ტურნირებსა და ღონისძიებებს, ასევე ხელს უწყობს ახალგაზრდა სპორტსმენების აღზრდას.',
       missionTitle: 'ჩვენი მისია',
       missionDesc: 'ამერიკული ფეხბურთის განვითარება საქართველოში, ახალგაზრდა თაობის ჩართვა და საერთაშორისო ასპარეზზე ქართული გუნდების წარმოჩენა.',
@@ -120,14 +120,14 @@ export const messages: Record<Locale, Messages> = {
       teams: 'Teams',
     },
     hero: {
-      title: 'Georgian American Football Federation',
+      title: 'American Football Federation of Georgia',
       subtitle: 'საქართველოს ამერიკული ფეხბურთის ფედერაცია',
       aboutBtn: 'About Us',
       eventsBtn: 'Events',
     },
     home: {
       aboutTitle: 'About Us',
-      aboutDesc: 'Get to know the Georgian American Football Federation and our mission',
+      aboutDesc: 'Get to know the American Football Federation of Georgia and our mission',
       eventsTitle: 'Events',
       eventsDesc: 'Upcoming games, tournaments and special events',
       teamsTitle: 'Teams',
@@ -135,8 +135,8 @@ export const messages: Record<Locale, Messages> = {
     },
     about: {
       title: 'About Us',
-      federationName: 'Georgian American Football Federation',
-      p1: 'GAFF (Georgian American Football Federation) is the federation created for the development and promotion of American football in Georgia. Our goal is to advance this sport within Georgian society.',
+      federationName: 'American Football Federation of Georgia',
+      p1: 'GAFF (American Football Federation of Georgia) is the federation created for the development and promotion of American football in Georgia. Our goal is to advance this sport within Georgian society.',
       p2: 'The federation unites teams from all over Georgia, organizes tournaments and events, and supports the development of young athletes.',
       missionTitle: 'Our Mission',
       missionDesc: 'To develop American football in Georgia, engage the younger generation, and represent Georgian teams on the international stage.',
@@ -175,7 +175,7 @@ export const messages: Record<Locale, Messages> = {
       ],
     },
     footer: {
-      copyright: 'Georgian American Football Federation. All rights reserved.',
+      copyright: 'American Football Federation of Georgia. All rights reserved.',
     },
   },
 }

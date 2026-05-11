@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
 <template>
   <div v-if="visible" :class="['splash-overlay', { 'fade-out': fadeOut }]">
     <img src="/federation.png" alt="GAFF" class="splash-logo" />
-    <div class="splash-text">Georgian American Football Federation</div>
+    <div class="splash-text">American Football Federation of Georgia</div>
     <div class="splash-line" />
   </div>
 </template>

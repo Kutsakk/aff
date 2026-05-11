@@ -19,7 +19,7 @@ function toggleLocale() {
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <NuxtLink to="/" class="flex items-center gap-3">
         <img src="/federation.png" alt="GAFF" class="w-10 h-10" />
-        <span class="text-lg font-bold" style="color: var(--color-gold)">GAFF</span>
+        <span class="text-lg font-bold" style="color: var(--color-gold)">AFF.GE</span>
       </NuxtLink>
 
       <!-- Desktop nav -->
