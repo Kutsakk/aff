@@ -102,10 +102,10 @@ export const messages: Record<Locale, Messages> = {
       title: 'გუნდები',
       redirecting: 'გადამისამართება...',
       list: [
-        { name: 'თბილისის ჯვაროსნები', city: 'თბილისი', description: 'საქართველოს პირველი ამერიკული ფეხბურთის გუნდი, დაარსებული 2020 წელს.', color: '#ff4a4a', image: '/crusaders.jpg' },
-        { name: 'თბილისის არწივები', city: 'თბილისი', description: 'საქართველოს პირველი ამერიკული ფეხბურთის გუნდი, დაარსებული 2020 წელს.', color: '#09a01b', image: '/eagles.jpg', href: '/eagles/index.html' },
-        { name: 'თბილისის ტიტანები', city: 'თბილისი', description: 'თბილისის წარმომადგენელი გუნდი, ცნობილი თავისი აგრესიული თამაშის სტილით.', color: '#4a9eff', image: '/titans.png' },
-        { name: 'რუსთავი სტილერსი', city: 'რუსთავი', description: 'იმერეთის რეგიონის გუნდი, გამოირჩევა ძლიერი დაცვით და გუნდური სულისკვეთებით.', color: '#c9a84c', image: '/rustavi.jpg' },
+        { name: 'ჯვაროსნები', city: 'თბილისი', description: 'საქართველოს პირველი ამერიკული ფეხბურთის გუნდი, დაარსებული 2020 წელს.', color: '#ff4a4a', image: '/crusaders.jpg' },
+        { name: 'არწივები', city: 'თბილისი', description: 'საქართველოს პირველი ამერიკული ფეხბურთის გუნდი, დაარსებული 2020 წელს.', color: '#09a01b', image: '/eagles.jpg', href: '/eagles/index.html' },
+        { name: 'ტიტანები', city: 'თბილისი', description: 'თბილისის წარმომადგენელი გუნდი, ცნობილი თავისი აგრესიული თამაშის სტილით.', color: '#4a9eff', image: '/titans.png' },
+        { name: 'სტილერსი', city: 'რუსთავი', description: 'იმერეთის რეგიონის გუნდი, გამოირჩევა ძლიერი დაცვით და გუნდური სულისკვეთებით.', color: '#c9a84c', image: '/rustavi.jpg' },
       ],
     },
     footer: {
@@ -168,10 +168,10 @@ export const messages: Record<Locale, Messages> = {
       title: 'Teams',
       redirecting: 'Redirecting to Eagles...',
       list: [
-        { name: 'Tbilisi Crusaders', city: 'Tbilisi', description: 'One of the first American football teams in Georgia, founded in 2020.', color: '#ff4a4a', image: '/crusaders.jpg' },
-        { name: 'Tbilisi Eagles', city: 'Tbilisi', description: 'One of the first American football teams in Georgia, founded in 2020.', color: '#09a01b', image: '/eagles.jpg', href: '/eagles/index.html' },
-        { name: 'Tbilisi Titans', city: 'Tbilisi', description: 'A Tbilisi team known for its aggressive playing style.', color: '#4a9eff', image: '/titans.png' },
-        { name: 'Rustavi Steelers', city: 'Rustavi', description: 'A team from the Imereti region, known for strong defense and team spirit.', color: '#c9a84c', image: '/rustavi.jpg' },
+        { name: 'Crusaders', city: 'Tbilisi', description: 'One of the first American football teams in Georgia, founded in 2020.', color: '#ff4a4a', image: '/crusaders.jpg' },
+        { name: 'Eagles', city: 'Tbilisi', description: 'One of the first American football teams in Georgia, founded in 2020.', color: '#09a01b', image: '/eagles.jpg', href: '/eagles/index.html' },
+        { name: 'Titans', city: 'Tbilisi', description: 'A Tbilisi team known for its aggressive playing style.', color: '#4a9eff', image: '/titans.png' },
+        { name: 'Steelers', city: 'Rustavi', description: 'A team from the Imereti region, known for strong defense and team spirit.', color: '#c9a84c', image: '/rustavi.jpg' },
       ],
     },
     footer: {

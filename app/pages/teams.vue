@@ -20,10 +20,10 @@ const teams = computed(() => t.value.teams.list)
 
             <div class="p-6 text-center">
               <div
-                class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold"
-                :style="{ background: team.color + '20', color: team.color, border: '2px solid ' + team.color + '40' }"
+                class="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden"
+                :style="{ border: '2px solid ' + team.color + '40' }"
               >
-                {{ team.name.charAt(0) }}
+                <img :src="team.image" :alt="team.name" class="w-full h-full object-cover" />
               </div>
 
               <h3 class="text-xl font-semibold mb-1" :style="{ color: team.color }">{{ team.name }}</h3>
@@ -37,10 +37,10 @@ const teams = computed(() => t.value.teams.list)
 
             <div class="p-6 text-center">
               <div
-                class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold"
-                :style="{ background: team.color + '20', color: team.color, border: '2px solid ' + team.color + '40' }"
+                class="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden"
+                :style="{ border: '2px solid ' + team.color + '40' }"
               >
-                {{ team.name.charAt(0) }}
+                <img :src="team.image" :alt="team.name" class="w-full h-full object-cover" />
               </div>
 
               <h3 class="text-xl font-semibold mb-1" :style="{ color: team.color }">{{ team.name }}</h3>
