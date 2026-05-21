@@ -1,6 +1,50 @@
 <script setup lang="ts">
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Navigation, Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+
 const { t } = useLocale()
+const router = useRouter()
 const spotlights = ref<boolean[]>([])
+const activeRealIndex = ref(0)
+
+function onSwiperClick(swiper: any) {
+  const clicked = swiper.clickedSlide as HTMLElement | undefined
+  if (!clicked) return
+  const activeSlide = swiper.slides[swiper.activeIndex] as HTMLElement | undefined
+  // Клик по боковой карточке → только подвинуть её в центр, без перехода
+  if (clicked !== activeSlide) return
+  // Клик по уже активной (центральной) → переходим на страницу
+  const target = clicked.querySelector<HTMLElement>('[data-href]')
+  const href = target?.dataset.href
+  if (href) router.push(href)
+}
+
+function onSlideChange(swiper: any) {
+  const baseLen = slides.value.length
+  activeRealIndex.value = swiper.realIndex % baseLen
+}
+
+function goToDot(swiper: any, index: number) {
+  const baseLen = slides.value.length
+  const currentReal = swiper.realIndex % baseLen
+  const diff = index - currentReal
+  if (diff === 0) return
+  if (diff > 0) {
+    for (let i = 0; i < diff; i++) swiper.slideNext()
+  } else {
+    for (let i = 0; i < -diff; i++) swiper.slidePrev()
+  }
+}
+
+const swiperRef = ref<any>(null)
+function onSwiperInit(swiper: any) {
+  swiperRef.value = swiper
+  activeRealIndex.value = swiper.realIndex % slides.value.length
+}
+
 const flashLeft = ref(false)
 const flashRight = ref(false)
 const timers: ReturnType<typeof setTimeout>[] = []
@@ -17,6 +61,39 @@ const spotlightPositions = [
   { top: '5%', left: '76%' },
   { top: '8%', left: '84%' },
 ]
+
+const slides = computed(() => [
+  {
+    to: '/about',
+    image: '/cup.jpg',
+    images: null as string[] | null,
+    title: t.value.home.aboutTitle,
+    desc: t.value.home.aboutDesc,
+    tag: t.value.nav.about,
+  },
+  {
+    to: '/events',
+    image: '/event1.jpg',
+    images: null as string[] | null,
+    title: t.value.home.eventsTitle,
+    desc: t.value.home.eventsDesc,
+    tag: t.value.nav.events,
+  },
+  {
+    to: '/teams',
+    image: '',
+    images: ['/crusaders.jpg', '/eagles.jpg', '/titans.png', '/rustavi.jpg'] as string[] | null,
+    title: t.value.home.teamsTitle,
+    desc: t.value.home.teamsDesc,
+    tag: t.value.nav.teams,
+  },
+])
+
+// Дублируем слайды x2 чтобы у Swiper было достаточно слайдов для корректного loop
+// при slidesPerView > 1. Порядок при этом остаётся (About,Events,Teams,About,Events,Teams).
+const loopSlides = computed(() => [...slides.value, ...slides.value])
+
+const swiperModules = [Navigation, Pagination]
 
 onMounted(() => {
   spotlights.value = new Array(spotlightPositions.length).fill(false)
@@ -77,21 +154,341 @@ onBeforeUnmount(() => {
 
     <div class="hero-bg-overlay" />
 
-    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-4">
-      <h1 class="text-3xl md:text-5xl font-bold mb-4" style="color: var(--color-gold)">
-        {{ t.hero.title }}
-      </h1>
-      <p class="text-lg md:text-xl text-white/70 max-w-2xl mb-8">
-        {{ t.hero.subtitle }}
-      </p>
-      <div class="flex gap-4">
-        <UButton to="/about" size="lg" variant="solid" class="bg-[var(--color-gold)] hover:bg-[var(--color-gold-light)] text-black font-semibold">
-          {{ t.hero.aboutBtn }}
-        </UButton>
-        <UButton to="/events" size="lg" variant="outline" class="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10">
-          {{ t.hero.eventsBtn }}
-        </UButton>
+    <div class="relative z-10 flex items-center justify-center min-h-screen px-4 pt-24 pb-16">
+      <div class="hero-slider-wrap">
+        <Swiper
+          :modules="swiperModules"
+          :slides-per-view="1.15"
+          :space-between="40"
+          :loop="true"
+          :centered-slides="true"
+          :grab-cursor="false"
+          :slide-to-clicked-slide="true"
+          :speed="500"
+          :breakpoints="{
+            640: { slidesPerView: 1.4, spaceBetween: 50 },
+            900: { slidesPerView: 1.8, spaceBetween: 60 },
+          }"
+          :navigation="true"
+          :pagination="false"
+          class="hero-swiper"
+          @click="onSwiperClick"
+          @swiper="onSwiperInit"
+          @slide-change="onSlideChange"
+        >
+          <SwiperSlide v-for="(slide, idx) in loopSlides" :key="idx + '-' + slide.to">
+            <div class="slide-card" :data-href="slide.to">
+              <div v-if="slide.images" class="slide-collage">
+                <div
+                  v-for="(img, i) in slide.images"
+                  :key="i"
+                  class="collage-cell"
+                  :style="{ backgroundImage: `url(${img})` }"
+                />
+              </div>
+              <div v-else class="slide-image" :style="{ backgroundImage: `url(${slide.image})` }" />
+              <div class="slide-overlay" />
+              <div class="slide-content">
+                <span class="slide-tag">{{ slide.tag }}</span>
+                <h3 class="slide-title">{{ slide.title }}</h3>
+                <p class="slide-desc">{{ slide.desc }}</p>
+              </div>
+            </div>
+          </SwiperSlide>
+        </Swiper>
+
+        <div class="custom-pagination">
+          <button
+            v-for="(slide, i) in slides"
+            :key="slide.to"
+            class="dot"
+            :class="{ active: activeRealIndex === i }"
+            :aria-label="`Go to ${slide.title}`"
+            @click="goToDot(swiperRef, i)"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.hero-slider-wrap {
+  width: 100%;
+  max-width: 900px;
+}
+
+.hero-swiper {
+  width: 100%;
+  padding: 40px 10px 60px;
+  overflow: visible;
+}
+
+.hero-swiper :deep(.swiper-wrapper) {
+  align-items: stretch;
+}
+
+.hero-swiper :deep(.swiper-slide) {
+  height: auto;
+  display: flex;
+  transition: transform 0.5s ease, filter 0.5s ease, opacity 0.5s ease;
+  opacity: 0.45;
+  filter: brightness(0.55) blur(1px);
+  transform: scale(0.82);
+  transform-origin: center center;
+}
+
+/* Боковые карточки — курсор обычный, без hover-подъёма */
+.hero-swiper :deep(.swiper-slide) .slide-card {
+  cursor: default;
+}
+.hero-swiper :deep(.swiper-slide) .slide-card:hover {
+  transform: none;
+  border-color: rgba(201, 168, 76, 0.25);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+}
+.hero-swiper :deep(.swiper-slide) .slide-card:hover .slide-image {
+  transform: none;
+}
+
+.hero-swiper :deep(.swiper-slide-active) {
+  opacity: 1;
+  filter: brightness(1) blur(0);
+  transform: scale(1);
+  z-index: 2;
+}
+
+/* Активная (центральная) карточка — кликабельная, с hover-эффектом */
+.hero-swiper :deep(.swiper-slide-active) .slide-card {
+  cursor: pointer;
+}
+.hero-swiper :deep(.swiper-slide-active) .slide-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(201, 168, 76, 0.7);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(201, 168, 76, 0.25);
+}
+.hero-swiper :deep(.swiper-slide-active) .slide-card:hover .slide-image {
+  transform: scale(1.06);
+}
+
+.slide-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.slide-card:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 4px;
+}
+
+.slide-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(201, 168, 76, 0.7);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(201, 168, 76, 0.25);
+}
+
+.slide-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s ease;
+}
+
+.slide-card:hover .slide-image {
+  transform: scale(1.06);
+}
+
+/* 2x2 collage for Teams slide */
+.slide-collage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 3px;
+  background: #000;
+  transition: transform 0.6s ease;
+}
+
+.collage-cell {
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-swiper :deep(.swiper-slide-active) .slide-card:hover .slide-collage {
+  transform: scale(1.04);
+}
+
+.slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+}
+
+.slide-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #fff;
+}
+
+.slide-tag {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.slide-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-gold);
+  margin: 0 0 6px;
+}
+
+.slide-desc {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.slide-content {
+  padding: 16px;
+}
+
+.slide-tag {
+  font-size: 0.62rem;
+  padding: 3px 8px;
+  margin-bottom: 8px;
+}
+
+/* Football navigation buttons — gold circle background + football on top */
+.hero-swiper :deep(.swiper-button-prev),
+.hero-swiper :deep(.swiper-button-next) {
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(circle at 30% 30%, var(--color-gold-light) 0%, var(--color-gold) 55%, var(--color-gold-dark) 100%);
+  border-radius: 50%;
+  color: transparent;
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 230, 160, 0.35) inset,
+    0 -2px 6px rgba(0, 0, 0, 0.2) inset;
+  transition: transform 0.25s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+.hero-swiper :deep(.swiper-button-prev) {
+  left: -6px;
+}
+.hero-swiper :deep(.swiper-button-next) {
+  right: -6px;
+}
+
+/* Football image on top of the circle */
+.hero-swiper :deep(.swiper-button-prev::before),
+.hero-swiper :deep(.swiper-button-next::before) {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/ball.png');
+  background-size: 78%;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* Hide swiper's default arrow text */
+.hero-swiper :deep(.swiper-button-prev::after),
+.hero-swiper :deep(.swiper-button-next::after) {
+  display: none;
+}
+
+.hero-swiper :deep(.swiper-button-prev:hover),
+.hero-swiper :deep(.swiper-button-next:hover) {
+  transform: scale(1.12);
+  box-shadow:
+    0 8px 24px rgba(201, 168, 76, 0.55),
+    0 0 24px rgba(201, 168, 76, 0.45),
+    0 0 0 1px rgba(255, 240, 180, 0.55) inset,
+    0 -2px 6px rgba(0, 0, 0, 0.2) inset;
+  filter: brightness(1.08);
+}
+
+.hero-swiper :deep(.swiper-button-prev:active),
+.hero-swiper :deep(.swiper-button-next:active) {
+  transform: scale(1.02);
+}
+
+.hero-swiper :deep(.swiper-button-disabled) {
+  opacity: 0.35;
+}
+
+/* Custom pagination — 3 dots regardless of duplicated loop slides */
+.custom-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.dot.active {
+  background: var(--color-gold);
+  transform: scale(1.3);
+}
+
+@media (max-width: 640px) {
+  .slide-title {
+    font-size: 1.2rem;
+  }
+  .slide-desc {
+    font-size: 0.8rem;
+  }
+  .hero-swiper :deep(.swiper-button-prev),
+  .hero-swiper :deep(.swiper-button-next) {
+    width: 50px;
+    height: 50px;
+  }
+}
+</style>

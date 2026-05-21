@@ -16,22 +16,15 @@ function toggleLocale() {
 
 <template>
   <header class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <NuxtLink to="/" class="flex items-center gap-3">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <NuxtLink to="/" class="flex items-center gap-3 shrink-0">
         <img src="/federation.png" alt="GAFF" class="w-10 h-10" />
         <span class="text-lg font-bold" style="color: var(--color-gold)">AFF.GE</span>
       </NuxtLink>
 
-      <!-- Desktop nav -->
-      <nav class="hidden md:flex items-center gap-8">
-        <NuxtLink
-          v-for="item in navItems"
-          :key="item.to"
-          :to="item.to"
-          class="nav-link"
-        >
-          {{ item.label }}
-        </NuxtLink>
+      <!-- Desktop right side: federation name + language switch -->
+      <div class="hidden md:flex items-center gap-6">
+        <span class="federation-name">American Football Federation of Georgia</span>
 
         <button
           class="lang-switch"
@@ -42,7 +35,7 @@ function toggleLocale() {
           <span class="divider">/</span>
           <span :class="{ active: locale === 'en' }">EN</span>
         </button>
-      </nav>
+      </div>
 
       <!-- Mobile toggle -->
       <button class="md:hidden text-white" @click="mobileOpen = !mobileOpen">
@@ -53,6 +46,8 @@ function toggleLocale() {
     <!-- Mobile nav -->
     <Transition name="slide">
       <nav v-if="mobileOpen" class="md:hidden bg-black/95 backdrop-blur-md border-t border-white/10 px-4 py-4 flex flex-col gap-4">
+        <span class="federation-name text-base">American Football Federation of Georgia</span>
+
         <NuxtLink
           v-for="item in navItems"
           :key="item.to"
@@ -82,6 +77,20 @@ function toggleLocale() {
 .slide-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+.federation-name {
+  color: var(--color-gold);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .federation-name {
+    font-size: 0.85rem;
+  }
 }
 
 .lang-switch {
