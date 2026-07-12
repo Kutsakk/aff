@@ -12,6 +12,19 @@ const navItems = computed(() => [
 function toggleLocale() {
   setLocale(locale.value === 'ka' ? 'en' : 'ka')
 }
+
+// Блокируем прокрутку страницы, пока открыто полноэкранное меню
+watch(mobileOpen, (open) => {
+  if (import.meta.client) {
+    document.body.style.overflow = open ? 'hidden' : ''
+  }
+})
+
+onBeforeUnmount(() => {
+  if (import.meta.client) {
+    document.body.style.overflow = ''
+  }
+})
 </script>
 
 <template>
@@ -43,40 +56,117 @@ function toggleLocale() {
       </button>
     </div>
 
-    <!-- Mobile nav -->
-    <Transition name="slide">
-      <nav v-if="mobileOpen" class="md:hidden bg-black/95 backdrop-blur-md border-t border-white/10 px-4 py-4 flex flex-col gap-4">
-        <span class="federation-name text-base">American Football Federation of Georgia</span>
-
-        <NuxtLink
-          v-for="item in navItems"
-          :key="item.to"
-          :to="item.to"
-          class="nav-link text-lg"
-          @click="mobileOpen = false"
+    <!-- Mobile nav — полноэкранный оверлей с затемнением (телепорт в body,
+         чтобы backdrop-filter шапки не ограничивал fixed-позиционирование) -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="mobileOpen"
+          class="mobile-overlay md:hidden"
+          @click.self="mobileOpen = false"
         >
-          {{ item.label }}
-        </NuxtLink>
+          <button
+            class="mobile-close"
+            aria-label="Close menu"
+            @click="mobileOpen = false"
+          >
+            <UIcon name="i-lucide-x" class="w-7 h-7" />
+          </button>
 
-        <button class="lang-switch self-start" @click="toggleLocale">
-          <span :class="{ active: locale === 'ka' }">KA</span>
-          <span class="divider">/</span>
-          <span :class="{ active: locale === 'en' }">EN</span>
-        </button>
-      </nav>
-    </Transition>
+          <nav class="mobile-nav">
+            <span class="federation-name text-center">American Football Federation of Georgia</span>
+
+            <NuxtLink
+              v-for="item in navItems"
+              :key="item.to"
+              :to="item.to"
+              class="mobile-nav-link"
+              @click="mobileOpen = false"
+            >
+              {{ item.label }}
+            </NuxtLink>
+
+            <button class="lang-switch" @click="toggleLocale">
+              <span :class="{ active: locale === 'ka' }">KA</span>
+              <span class="divider">/</span>
+              <span :class="{ active: locale === 'en' }">EN</span>
+            </button>
+          </nav>
+        </div>
+      </Transition>
+    </Teleport>
   </header>
 </template>
 
 <style scoped>
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.3s ease;
+/* Полноэкранное мобильное меню */
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 84px 24px 40px;
 }
-.slide-enter-from,
-.slide-leave-to {
+
+.mobile-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 6px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.mobile-close:hover,
+.mobile-close:active {
+  color: var(--color-gold);
+  transform: scale(1.1);
+}
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+}
+
+.mobile-nav-link {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.mobile-nav-link:hover,
+.mobile-nav-link:active {
+  color: var(--color-gold);
+  transform: scale(1.05);
+}
+
+.mobile-nav .federation-name {
+  white-space: normal;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.mobile-nav .lang-switch {
+  margin-top: 10px;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
 }
 
 .federation-name {

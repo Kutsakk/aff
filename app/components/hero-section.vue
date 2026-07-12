@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Navigation, Pagination } from 'swiper/modules'
+import { EffectCoverflow } from 'swiper/modules'
 import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
+import 'swiper/css/effect-coverflow'
 
 const { t } = useLocale()
 const router = useRouter()
@@ -93,7 +92,7 @@ const slides = computed(() => [
 // при slidesPerView > 1. Порядок при этом остаётся (About,Events,Teams,About,Events,Teams).
 const loopSlides = computed(() => [...slides.value, ...slides.value])
 
-const swiperModules = [Navigation, Pagination]
+const swiperModules = [EffectCoverflow]
 
 onMounted(() => {
   spotlights.value = new Array(spotlightPositions.length).fill(false)
@@ -158,18 +157,21 @@ onBeforeUnmount(() => {
       <div class="hero-slider-wrap">
         <Swiper
           :modules="swiperModules"
-          :slides-per-view="1.15"
-          :space-between="40"
+          effect="coverflow"
+          :slides-per-view="'auto'"
           :loop="true"
           :centered-slides="true"
-          :grab-cursor="false"
+          :grab-cursor="true"
           :slide-to-clicked-slide="true"
           :speed="500"
-          :breakpoints="{
-            640: { slidesPerView: 1.4, spaceBetween: 50 },
-            900: { slidesPerView: 1.8, spaceBetween: 60 },
+          :coverflow-effect="{
+            rotate: 62,
+            stretch: 0,
+            depth: 170,
+            modifier: 1.15,
+            slideShadows: true,
           }"
-          :navigation="true"
+          :navigation="false"
           :pagination="false"
           class="hero-swiper"
           @click="onSwiperClick"
@@ -229,13 +231,13 @@ onBeforeUnmount(() => {
 }
 
 .hero-swiper :deep(.swiper-slide) {
+  width: 320px;
+  max-width: 78vw;
   height: auto;
   display: flex;
-  transition: transform 0.5s ease, filter 0.5s ease, opacity 0.5s ease;
-  opacity: 0.45;
-  filter: brightness(0.55) blur(1px);
-  transform: scale(0.82);
-  transform-origin: center center;
+  transition: filter 0.5s ease, opacity 0.5s ease;
+  opacity: 0.65;
+  filter: brightness(0.7);
 }
 
 /* Боковые карточки — курсор обычный, без hover-подъёма */
@@ -253,8 +255,7 @@ onBeforeUnmount(() => {
 
 .hero-swiper :deep(.swiper-slide-active) {
   opacity: 1;
-  filter: brightness(1) blur(0);
-  transform: scale(1);
+  filter: brightness(1);
   z-index: 2;
 }
 
@@ -387,67 +388,6 @@ onBeforeUnmount(() => {
   margin-bottom: 8px;
 }
 
-/* Football navigation buttons — gold circle background + football on top */
-.hero-swiper :deep(.swiper-button-prev),
-.hero-swiper :deep(.swiper-button-next) {
-  width: 70px;
-  height: 70px;
-  background: radial-gradient(circle at 30% 30%, var(--color-gold-light) 0%, var(--color-gold) 55%, var(--color-gold-dark) 100%);
-  border-radius: 50%;
-  color: transparent;
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(255, 230, 160, 0.35) inset,
-    0 -2px 6px rgba(0, 0, 0, 0.2) inset;
-  transition: transform 0.25s ease, box-shadow 0.3s ease, filter 0.3s ease;
-}
-
-.hero-swiper :deep(.swiper-button-prev) {
-  left: -6px;
-}
-.hero-swiper :deep(.swiper-button-next) {
-  right: -6px;
-}
-
-/* Football image on top of the circle */
-.hero-swiper :deep(.swiper-button-prev::before),
-.hero-swiper :deep(.swiper-button-next::before) {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('/ball.png');
-  background-size: 78%;
-  background-repeat: no-repeat;
-  background-position: center;
-  pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-}
-
-/* Hide swiper's default arrow text */
-.hero-swiper :deep(.swiper-button-prev::after),
-.hero-swiper :deep(.swiper-button-next::after) {
-  display: none;
-}
-
-.hero-swiper :deep(.swiper-button-prev:hover),
-.hero-swiper :deep(.swiper-button-next:hover) {
-  transform: scale(1.12);
-  box-shadow:
-    0 8px 24px rgba(201, 168, 76, 0.55),
-    0 0 24px rgba(201, 168, 76, 0.45),
-    0 0 0 1px rgba(255, 240, 180, 0.55) inset,
-    0 -2px 6px rgba(0, 0, 0, 0.2) inset;
-  filter: brightness(1.08);
-}
-
-.hero-swiper :deep(.swiper-button-prev:active),
-.hero-swiper :deep(.swiper-button-next:active) {
-  transform: scale(1.02);
-}
-
-.hero-swiper :deep(.swiper-button-disabled) {
-  opacity: 0.35;
-}
 
 /* Custom pagination — 3 dots regardless of duplicated loop slides */
 .custom-pagination {
@@ -479,16 +419,16 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 640px) {
+  /* Уже карточка → по краям выглядывают соседние (coverflow-эффект виден и на мобилке) */
+  .hero-swiper :deep(.swiper-slide) {
+    width: 260px;
+    max-width: 68vw;
+  }
   .slide-title {
-    font-size: 1.2rem;
+    font-size: 1.05rem;
   }
   .slide-desc {
-    font-size: 0.8rem;
-  }
-  .hero-swiper :deep(.swiper-button-prev),
-  .hero-swiper :deep(.swiper-button-next) {
-    width: 50px;
-    height: 50px;
+    font-size: 0.78rem;
   }
 }
 </style>
