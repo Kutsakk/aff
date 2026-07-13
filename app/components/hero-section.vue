@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { EffectCoverflow } from 'swiper/modules'
+import { EffectCoverflow, Mousewheel } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/effect-coverflow'
 
@@ -92,7 +92,7 @@ const slides = computed(() => [
 // при slidesPerView > 1. Порядок при этом остаётся (About,Events,Teams,About,Events,Teams).
 const loopSlides = computed(() => [...slides.value, ...slides.value])
 
-const swiperModules = [EffectCoverflow]
+const swiperModules = [EffectCoverflow, Mousewheel]
 
 onMounted(() => {
   spotlights.value = new Array(spotlightPositions.length).fill(false)
@@ -164,6 +164,7 @@ onBeforeUnmount(() => {
           :grab-cursor="true"
           :slide-to-clicked-slide="true"
           :speed="500"
+          :mousewheel="{ forceToAxis: true, sensitivity: 0.6, thresholdDelta: 20, thresholdTime: 250 }"
           :coverflow-effect="{
             rotate: 62,
             stretch: 0,
