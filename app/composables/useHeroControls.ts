@@ -12,13 +12,13 @@ export interface HeroControls {
 }
 
 export const HERO_DEFAULTS: HeroControls = {
-  // Нейтральный старт: вся картинка по центру, без обрезки — дальше крутишь через панель
-  imgScale: 1,
-  imgX: 50,
-  imgY: 50,
-  titleScale: 0.69,
-  titleX: -3,
-  titleY: -6,
+  // Зафиксированная композиция из панели (?edit) — одинаково для всех посетителей
+  imgScale: 0.86,
+  imgX: 55,
+  imgY: 69,
+  titleScale: 0.92,
+  titleX: 13.5,
+  titleY: -1,
   showRule: false,
 }
 
