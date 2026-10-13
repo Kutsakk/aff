@@ -1,33 +1,179 @@
-import { messages, type Locale, type Messages } from '~/i18n/messages'
+export type Locale = 'ka' | 'ru' | 'en'
 
-const STORAGE_KEY = 'gaff-locale'
-const DEFAULT_LOCALE: Locale = 'ka'
+export const LOCALES: Locale[] = ['ka', 'ru', 'en']
 
-export function useLocale() {
-  const locale = useState<Locale>('locale', () => DEFAULT_LOCALE)
+const messages = {
+  ka: {
+    nav: { home: 'მთავარი', about: 'ჩვენს შესახებ', rules: 'წესები', play: 'დაიწყე თამაში', events: 'ღონისძიებები', teams: 'გუნდები' },
+    cta: 'დაგვიკავშირდით',
+    home: {
+      // Название федерации — бренд, не переводим ни на один язык
+      heroLine1: 'American Football',
+      heroLine2: 'Federation of',
+      heroLine3: 'Georgia',
+      heroTag: {
+        line1: [{ t: 'ხასიათი ', shine: false }, { t: 'ქართული', shine: true }, { t: ' —', shine: false }],
+        line2: [{ t: 'ფეხბურთი ', shine: false }, { t: 'ამერიკული', shine: true }],
+      },
+      introEyebrow: 'ფედერაცია',
+      introH2: 'საქართველოს ამერიკული ფეხბურთის ეროვნული ფედერაცია',
+      introP: '2011 წლიდან ვავითარებთ ამერიკულ ფეხბურთს საქართველოში — პირველი ორი გუნდიდან ეროვნულ ნაკრებამდე, საერთაშორისო ტურნირებამდე თბილისში და დებიუტამდე IFAF-ის ევროპულ ციკლში. ვზრდით მოთამაშეებს, მწვრთნელებსა და მსაჯებს და სპორტს ხელმისაწვდომს ვხდით მთელ ქვეყანაში.',
+      introLink: 'ჩვენი ისტორია',
+      statFounded: 'დაარსების წელი',
+      statYears: 'წლის განვითარება',
+      statNations: '8 მონაწილე ქვეყანა · 2026',
+      statIfaf: 'ევროპული tackle ციკლი',
+      joinEyebrow: 'შემოგვიერთდი',
+      joinH2: 'გინდა თამაშის დაწყება?',
+      joinP: 'ვასწავლით ნულიდან. აირჩიე გზა ასაკის მიხედვით — დანარჩენს მწვრთნელები გასწავლიან.',
+      flagTitle: 'Flag football',
+      flagDesc: 'უკონტაქტო ფორმატი მძიმე აღჭურვილობის გარეშე. უსაფრთხო, მხიარული, სწრაფი.',
+      flagCta: 'ბავშვის ჩაწერა',
+      tackleTitle: 'Tackle',
+      tackleDesc: 'კლასიკური საკონტაქტო ფეხბურთი. გზა კლუბსა და ეროვნულ ნაკრებამდე.',
+      tackleCta: 'ვარჯიშზე მოსვლა',
+      rulesEyebrow: 'დამწყებთათვის',
+      rulesH2: 'წესები 5 წუთში',
+      rulesP: 'ოთხი მცდელობა, ათი იარდი, საგოლე ზონა. ამერიკული ფეხბურთი თაროებზე დავალაგეთ — დაუნების სისტემიდან და ქულების დათვლიდან პოზიციებამდე და ჯარიმებამდე.',
+      rulesCta: 'წესების გარკვევა',
+      eventsEyebrow: 'აფიშა',
+      eventsH2: 'უახლოესი ღონისძიებები',
+      eventsP: 'საქართველოს საერთაშორისო დებიუტი ევროპულ tackle ფეხბურთში.',
+      evLive: 'LIVE 11 ოქტომბერი',
+      evDate: '11 ოქტომბერი 2026',
+      evPlace: 'ხვამლი არენა, თბილისი · IFAF Level 2',
+      evCta: 'მატჩის შესახებ',
+    },
+    event: {
+      live: 'LIVE · საერთაშორისო მატჩი',
+      teamGe: 'საქართველო',
+      vs: 'vs',
+      teamGb: 'დიდი ბრიტანეთი',
+      lead: 'საქართველოს საერთაშორისო დებიუტი ევროპულ tackle ფეხბურთში — Development დონე. ეროვნული ნაკრები პირველად მასპინძლობს დიდი ბრიტანეთის გუნდს თბილისში.',
+      labelDate: 'თარიღი',
+      labelTime: 'დრო',
+      labelPlace: 'ადგილი',
+      labelTournament: 'ტურნირი',
+      labelBroadcast: 'ტრანსლაცია',
+      valDate: '11 ოქტომბერი 2026',
+      valPlace: 'ხვამლი არენა, თბილისი',
+    },
+  },
+  ru: {
+    nav: { home: 'Главная', about: 'О нас', rules: 'Правила', play: 'Начать играть', events: 'События', teams: 'Команды' },
+    cta: 'Связаться',
+    home: {
+      heroLine1: 'American Football',
+      heroLine2: 'Federation of',
+      heroLine3: 'Georgia',
+      heroTag: {
+        line1: [{ t: 'Характер ', shine: false }, { t: 'грузинский', shine: true }, { t: ' —', shine: false }],
+        line2: [{ t: 'футбол ', shine: false }, { t: 'американский', shine: true }],
+      },
+      introEyebrow: 'Федерация',
+      introH2: 'Национальная федерация американского футбола Грузии',
+      introP: 'С 2011 года мы развиваем американский футбол в Грузии — от первых двух команд до национальной сборной, международных турниров в Тбилиси и дебюта в европейском цикле IFAF. Мы растим игроков, тренеров и судей и делаем спорт доступным по всей стране.',
+      introLink: 'Наша история',
+      statFounded: 'год основания',
+      statYears: 'лет развития',
+      statNations: '8 стран-участниц · 2026',
+      statIfaf: 'европейский цикл tackle',
+      joinEyebrow: 'Присоединяйся',
+      joinH2: 'Хочешь начать играть?',
+      joinP: 'Мы учим с нуля. Выбери путь по возрасту — остальному научат тренеры.',
+      flagTitle: 'Flag football',
+      flagDesc: 'Бесконтактный формат без тяжёлой экипировки. Безопасно, весело, быстро.',
+      flagCta: 'Записать ребёнка',
+      tackleTitle: 'Tackle',
+      tackleDesc: 'Классический контактный футбол. Путь в клуб и национальную сборную.',
+      tackleCta: 'Прийти на тренировку',
+      rulesEyebrow: 'Новичкам',
+      rulesH2: 'Правила за 5 минут',
+      rulesP: 'Четыре попытки, десять ярдов, зачётная зона. Разобрали американский футбол по полочкам — от системы даунов и подсчёта очков до позиций и штрафов.',
+      rulesCta: 'Разобраться в правилах',
+      eventsEyebrow: 'Афиша',
+      eventsH2: 'Ближайшие события',
+      eventsP: 'Международный дебют Грузии в европейском tackle football.',
+      evLive: 'LIVE 11 ОКТЯБРЯ',
+      evDate: '11 октября 2026',
+      evPlace: 'Хвамли Арена, Тбилиси · IFAF Level 2',
+      evCta: 'Подробнее о матче',
+    },
+    event: {
+      live: 'LIVE · Международный матч',
+      teamGe: 'Грузия',
+      vs: 'vs',
+      teamGb: 'Великобритания',
+      lead: 'Международный дебют Грузии в европейском tackle football — Development уровень. Национальная сборная впервые принимает команду Великобритании в Тбилиси.',
+      labelDate: 'Дата',
+      labelTime: 'Время',
+      labelPlace: 'Место',
+      labelTournament: 'Турнир',
+      labelBroadcast: 'Трансляция',
+      valDate: '11 октября 2026',
+      valPlace: 'Хвамли Арена, Тбилиси',
+    },
+  },
+  en: {
+    nav: { home: 'Home', about: 'About', rules: 'Rules', play: 'Start playing', events: 'Events', teams: 'Teams' },
+    cta: 'Get in touch',
+    home: {
+      heroLine1: 'American Football',
+      heroLine2: 'Federation of',
+      heroLine3: 'Georgia',
+      heroTag: {
+        line1: [{ t: 'Georgian', shine: true }, { t: ' spirit', shine: false }, { t: ' —', shine: false }],
+        line2: [{ t: 'American', shine: true }, { t: ' game', shine: false }],
+      },
+      introEyebrow: 'Federation',
+      introH2: 'National American Football Federation of Georgia',
+      introP: 'Since 2011 we have been growing American football in Georgia — from the first two teams to a national squad, international tournaments in Tbilisi and a debut in the IFAF European cycle. We develop players, coaches and referees and make the sport accessible across the country.',
+      introLink: 'Our story',
+      statFounded: 'year founded',
+      statYears: 'years of growth',
+      statNations: '8 nations · 2026',
+      statIfaf: 'European tackle cycle',
+      joinEyebrow: 'Join us',
+      joinH2: 'Want to start playing?',
+      joinP: 'We teach from scratch. Choose your path by age — coaches handle the rest.',
+      flagTitle: 'Flag football',
+      flagDesc: 'Non-contact format without heavy gear. Safe, fun, fast.',
+      flagCta: 'Enrol your child',
+      tackleTitle: 'Tackle',
+      tackleDesc: 'Classic contact football. The path to a club and the national team.',
+      tackleCta: 'Come to a training',
+      rulesEyebrow: 'For beginners',
+      rulesH2: 'Rules in 5 minutes',
+      rulesP: 'Four downs, ten yards, the end zone. We broke American football down step by step — from the system of downs and scoring to positions and penalties.',
+      rulesCta: 'Learn the rules',
+      eventsEyebrow: 'Schedule',
+      eventsH2: 'Upcoming events',
+      eventsP: "Georgia's international debut in European tackle football.",
+      evLive: 'LIVE · OCT 11',
+      evDate: 'October 11, 2026',
+      evPlace: 'Khvamli Arena, Tbilisi · IFAF Level 2',
+      evCta: 'Match details',
+    },
+    event: {
+      live: 'LIVE · International match',
+      teamGe: 'Georgia',
+      vs: 'vs',
+      teamGb: 'Great Britain',
+      lead: "Georgia's international debut in European tackle football — Development level. The national team hosts Great Britain in Tbilisi for the first time.",
+      labelDate: 'Date',
+      labelTime: 'Time',
+      labelPlace: 'Venue',
+      labelTournament: 'Tournament',
+      labelBroadcast: 'Broadcast',
+      valDate: 'October 11, 2026',
+      valPlace: 'Khvamli Arena, Tbilisi',
+    },
+  },
+} as const
 
-  if (import.meta.client) {
-    const saved = window.localStorage.getItem(STORAGE_KEY) as Locale | null
-    if (saved === 'ka' || saved === 'en') {
-      if (locale.value !== saved) {
-        locale.value = saved
-      }
-    }
-  }
-
-  function setLocale(next: Locale) {
-    locale.value = next
-    if (import.meta.client) {
-      window.localStorage.setItem(STORAGE_KEY, next)
-      document.documentElement.lang = next
-    }
-  }
-
-  const t = computed<Messages>(() => messages[locale.value])
-
-  useHead({
-    htmlAttrs: { lang: locale.value },
-  })
-
+export const useLocale = () => {
+  const locale = useState<Locale>('locale', () => 'ka')
+  const t = computed(() => messages[locale.value])
+  const setLocale = (l: Locale) => { locale.value = l }
   return { locale, setLocale, t }
 }

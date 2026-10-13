@@ -6,15 +6,22 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   fonts: {
     families: [
-      { name: 'Noto Sans Georgian', provider: 'google' }
+      { name: 'Noto Sans Georgian', provider: 'google' },
+      { name: 'Notable', provider: 'google' },
+      { name: 'Graduate', provider: 'google' },
+      { name: 'Oswald', provider: 'google' },
+      { name: 'Manrope', provider: 'google' },
+      { name: 'Audiowide', provider: 'google' },
+      { name: 'Goldman', provider: 'google' }
     ]
   },
   app: {
     head: {
-      title: 'GAFF - საქართველოს ამერიკული ფეხბურთის ფედერაცია',
+      // Название федерации — бренд, не переводим ни на один язык
+      title: 'American Football Federation of Georgia',
       htmlAttrs: { lang: 'ka' },
       meta: [
-        { name: 'description', content: 'საქართველოს ამერიკული ფეხბურთის ფედერაცია - American Football Federation of Georgia' }
+        { name: 'description', content: 'American Football Federation of Georgia' }
       ]
     }
   }

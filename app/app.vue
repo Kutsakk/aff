@@ -2,7 +2,6 @@
 </script>
 
 <template>
-  <SplashScreen />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
