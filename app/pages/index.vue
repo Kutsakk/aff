@@ -217,9 +217,6 @@ function onImgUp() {
       <span class="eyebrow">{{ t.home.introEyebrow }}</span>
       <h2>{{ t.home.introH2 }}</h2>
       <p>{{ t.home.introP }}</p>
-      <NuxtLink to="/about" class="link-more">{{ t.home.introLink }}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-      </NuxtLink>
     </div>
     <div class="stats">
       <div class="stat"><b>2011</b><span>{{ t.home.statFounded }}</span></div>
@@ -233,6 +230,12 @@ function onImgUp() {
         <span>{{ t.home.statIfaf }}</span>
       </div>
     </div>
+
+    <!-- «Наша история» — по центру под логотипами, с бегущим золотым бордером -->
+    <NuxtLink to="/about" class="history-btn">
+      <span>{{ t.home.introLink }}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+    </NuxtLink>
   </section>
 
   <!-- Начать играть -->
@@ -626,6 +629,51 @@ function onImgUp() {
 }
 .link-more svg { width: 16px; height: 16px; transition: transform 0.2s ease; }
 .link-more:hover svg { transform: translateX(3px); }
+
+/* «Наша история» — отдельная центрированная кнопка под цифрами/лого.
+   Бегущий золотой бордер-комета (как на карточках) + стеклянный фон. */
+.history-btn {
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin-top: clamp(22px, 4vh, 40px);
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 34px;
+  border-radius: 999px;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 0.98rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-gold-light, #e6c866);
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(201, 168, 76, 0.25);
+  transition: color 0.25s ease, background 0.25s ease, transform 0.2s ease;
+}
+.history-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.6px;
+  pointer-events: none;
+  background: conic-gradient(from var(--beam-angle), transparent 0%, #9a7a2e 7%, #e6c866 11%, #fff6d6 13%, #e6c866 15%, transparent 24%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: beamSpin 4s linear infinite;
+}
+.history-btn svg { width: 16px; height: 16px; transition: transform 0.2s ease; }
+.history-btn:hover { color: #fff; background: rgba(201, 168, 76, 0.14); transform: translateY(-2px); }
+.history-btn:hover svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) { .history-btn::before { animation: none; } }
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1033,7 +1081,8 @@ function onImgUp() {
     padding: 56px clamp(18px, 5vw, 40px) 36px;
   }
   .band__head { margin-bottom: 30px; }
-  .rules-teaser { padding: 56px clamp(18px, 5vw, 40px); }
+  /* Воздух между карточкой Tackle и блоком «Правила» (в зазоре виден золотой фон) */
+  .rules-teaser { padding: 56px clamp(18px, 5vw, 40px); margin-top: 52px; }
   .play-card { min-height: 340px; padding: 26px; }
   .event--feature { min-height: 240px; }
 

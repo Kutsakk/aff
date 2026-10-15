@@ -22,6 +22,12 @@ const ctaLabel = computed(
 
 const open = ref(false) // мобильное меню
 
+// Выбор языка из мобильного меню закрывает само меню
+function chooseLang(l: 'ka' | 'ru' | 'en') {
+  setLocale(l)
+  open.value = false
+}
+
 const isActive = (to: string) =>
   to === '/' ? route.path === '/' : route.path.startsWith(to)
 
@@ -111,12 +117,12 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
               :key="l"
               class="lang-btn"
               :class="{ active: locale === l }"
-              @click="setLocale(l)"
+              @click="chooseLang(l)"
             >
               {{ l }}
             </button>
           </div>
-          <a href="#" class="cta">
+          <a href="#" class="cta" @click="open = false">
             {{ ctaLabel }}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </a>
