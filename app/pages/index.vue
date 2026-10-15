@@ -41,6 +41,12 @@ onMounted(() => {
   const rulesBtn = document.querySelector<HTMLElement>('.rules-teaser .btn-gold')
   if (rulesBtn) {
     const onFill = () => {
+      // На десктопе заливка только по наведению (CSS) — скролл не трогаем
+      if (window.innerWidth >= 900) {
+        rulesBtn.style.removeProperty('--fill')
+        rulesBtn.classList.remove('filled')
+        return
+      }
       const r = rulesBtn.getBoundingClientRect()
       const vh = window.innerHeight
       const start = vh * 0.98 // кнопка только появилась снизу — пусто
@@ -934,11 +940,21 @@ function onImgUp() {
   transform-origin: left center;
   transition: transform 0.15s linear;
 }
-.btn-gold:hover,
-.btn-gold:focus-visible { --fill: 1; }
-.btn-gold:hover span,
-.btn-gold:focus-visible span,
+/* Мобильный: заполняется по скроллу (--fill и класс filled ставит JS) */
 .btn-gold.filled span { color: #1a1206; }
+
+/* Десктоп: как было раньше — плавная заливка золотом только при наведении,
+   без скролл-эффекта (JS не трогает --fill на широких экранах). */
+@media (min-width: 900px) {
+  .btn-gold::before {
+    transform: scaleX(0);
+    transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .btn-gold:hover::before,
+  .btn-gold:focus-visible::before { transform: scaleX(1); }
+  .btn-gold:hover span,
+  .btn-gold:focus-visible span { color: #1a1206; }
+}
 
 /* Событие — одна крупная кликабельная карточка */
 .events--single { display: flex; justify-content: center; }
