@@ -314,14 +314,14 @@ function onImgUp() {
   position: relative;
   z-index: 1;
 }
-/* На узком портретном экране cover показал бы только чёрный центр панорамной
-   картинки. Поэтому вписываем её по ширине экрана (золотые мазки ложатся по
-   краям) и повторяем по вертикали — золото тянется лентами по обоим бокам. */
+/* На узком портретном экране — отдельная вертикальная версия картинки
+   (повёрнутый кроп): золото по краям и углам, центр тёмный. cover без повтора,
+   цельная композиция — никакого тайлинга. */
 @media (max-width: 860px) {
   .grunge-bg {
     background:
-      linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-      url('/gold-brush-bg.webp') center top / 100% auto repeat-y;
+      linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.58)),
+      url('/gold-brush-bg-mobile.webp') center center / cover no-repeat;
   }
 }
 
@@ -969,6 +969,10 @@ function onImgUp() {
   .stat b { font-size: 2.4rem; }
   .stat--bsb .stat__logo { width: 120px !important; }
   .stat--ifaf .stat__mark { height: 70px !important; transform: none !important; }
+
+  /* Трофей на мобильном рисуется фоном секции (.intro__figure). Отдельную
+     картинку-кубок скрываем, иначе кубок/стадион двоится. */
+  .intro__trophy { display: none !important; }
 
   /* Компактные отступы: на телефоне vh-паддинги раздувались в огромные
      чёрные пустоты между секциями. Делаем плотно, «как десктоп, но мельче». */
