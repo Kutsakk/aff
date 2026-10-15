@@ -2,6 +2,17 @@
 // О нас — история как рассказ: зигзаг-таймлайн, текст/фото выезжают при скролле.
 useHead({ title: 'О нас — American Football Federation of Georgia' })
 
+// Фото для coverflow-галереи раздела. Пока — имеющиеся кадры проекта;
+// заменить на реальные фото федерации (положить в public/ и обновить список).
+const galleryImages = [
+  { src: '/about-1.webp', alt: 'Сборная Грузии' },
+  { src: '/12441.webp', alt: 'Матч' },
+  { src: '/helmet-bench.webp', alt: 'Экипировка' },
+  { src: '/flafball.webp', alt: 'Flag football' },
+  { src: '/ivent.webp', alt: 'Турнир' },
+  { src: '/235724766_11034270.webp', alt: 'Команда' },
+]
+
 onMounted(() => {
   // Начальное скрытие включаем только при живом JS — без него весь текст виден (SEO/fallback)
   document.documentElement.classList.add('about-reveal')
@@ -82,9 +93,10 @@ onMounted(() => {
     </header>
 
     <article class="prose">
-      <!-- Главное фото раздела -->
-      <figure class="photo photo--wide photo--img">
-        <img src="/about-1.webp" alt="Игроки сборной Грузии выходят на стадион" loading="lazy">
+      <!-- Галерея раздела: coverflow-карусель (десктоп — перетаскивание,
+           телефон — свайпы) -->
+      <figure class="gallery">
+        <PhotoCarousel :images="galleryImages" />
       </figure>
 
       <section data-year="2010">
@@ -758,6 +770,12 @@ onMounted(() => {
   font-weight: 500;
   color: #fff;
   line-height: 1.8;
+}
+
+/* Галерея-карусель раздела */
+.gallery {
+  margin: 64px 0 80px;
+  padding: 0;
 }
 
 /* ===== Заглушки под фото ===== */
