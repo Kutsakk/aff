@@ -2,15 +2,13 @@
 // О нас — история как рассказ: зигзаг-таймлайн, текст/фото выезжают при скролле.
 useHead({ title: 'О нас — American Football Federation of Georgia' })
 
-// Фото для coverflow-галереи раздела. Пока — имеющиеся кадры проекта;
-// заменить на реальные фото федерации (положить в public/ и обновить список).
+// Фото федерации для coverflow-галереи раздела
 const galleryImages = [
-  { src: '/about-1.webp', alt: 'Сборная Грузии' },
-  { src: '/12441.webp', alt: 'Матч' },
-  { src: '/helmet-bench.webp', alt: 'Экипировка' },
-  { src: '/flafball.webp', alt: 'Flag football' },
-  { src: '/ivent.webp', alt: 'Турнир' },
-  { src: '/235724766_11034270.webp', alt: 'Команда' },
+  { src: '/gallery-1.webp', alt: 'Команда на поле' },
+  { src: '/gallery-2.webp', alt: 'Американский футбол в Грузии' },
+  { src: '/gallery-3.webp', alt: 'Матч' },
+  { src: '/gallery-4.webp', alt: 'Игроки сборной' },
+  { src: '/gallery-5.webp', alt: 'Турнир' },
 ]
 
 onMounted(() => {

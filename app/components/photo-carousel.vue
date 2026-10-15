@@ -31,7 +31,7 @@ const modules = [EffectCoverflow, Pagination]
         class="pc__swiper"
       >
         <SwiperSlide v-for="(img, i) in props.images" :key="i" class="pc__slide">
-          <img :src="img.src" :alt="img.alt || ''" loading="lazy" decoding="async">
+          <img :src="img.src" :alt="img.alt || ''" decoding="async">
         </SwiperSlide>
       </Swiper>
 
