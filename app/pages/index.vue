@@ -969,6 +969,16 @@ function onImgUp() {
   .stat b { font-size: 2.4rem; }
   .stat--bsb .stat__logo { width: 120px !important; }
   .stat--ifaf .stat__mark { height: 70px !important; transform: none !important; }
+
+  /* Компактные отступы: на телефоне vh-паддинги раздувались в огромные
+     чёрные пустоты между секциями. Делаем плотно, «как десктоп, но мельче». */
+  .band {
+    padding: 56px clamp(18px, 5vw, 40px) 36px;
+  }
+  .band__head { margin-bottom: 30px; }
+  .rules-teaser { padding: 56px clamp(18px, 5vw, 40px); }
+  .play-card { min-height: 340px; padding: 26px; }
+  .event--feature { min-height: 240px; }
 }
 @media (max-width: 420px) {
   .stats { grid-template-columns: 1fr 1fr; gap: 20px 18px; }
