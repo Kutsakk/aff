@@ -133,11 +133,6 @@ onMounted(() => {
         </p>
       </section>
 
-      <figure class="photo">
-        <span class="photo__tag">Фото</span>
-        <span class="photo__hint">2010–2014 · первые матчи</span>
-      </figure>
-
       <section>
         <h2>2011 — создание Федерации американского футбола Грузии</h2>
         <p>
