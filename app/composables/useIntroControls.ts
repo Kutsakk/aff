@@ -20,15 +20,15 @@ export interface IntroControls {
 export const INTRO_DEFAULTS: IntroControls = {
   // Зафиксированная композиция из панели (?edit) — одинаково для всех посетителей
   figScale: 1.03,
-  figX: -271,
-  figY: 0,
+  figX: -304,
+  figY: -33,
   figBright: 0.57,
-  bsbSize: 140,
-  bsbX: 2,
-  bsbY: 0,
-  ifafSize: 117,
+  bsbSize: 138,
+  bsbX: 4,
+  bsbY: 14,
+  ifafSize: 107,
   ifafX: 0,
-  ifafY: 21,
+  ifafY: 26,
   blockX: -8,
   blockY: 99,
 }
