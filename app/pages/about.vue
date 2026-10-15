@@ -18,6 +18,13 @@ const galleryImages2011 = [
   { src: '/gallery-9.webp', alt: 'Матч' },
   { src: '/gallery-10.webp', alt: 'Игроки' },
 ]
+// Галерея к периоду 2012–2016
+const galleryImages2012 = [
+  { src: '/gallery-11.webp', alt: 'Первые соревнования' },
+  { src: '/gallery-12.webp', alt: 'Клубы федерации' },
+  { src: '/gallery-13.webp', alt: 'Матч чемпионата' },
+  { src: '/gallery-14.webp', alt: 'Игроки на поле' },
+]
 
 onMounted(() => {
   // Начальное скрытие включаем только при живом JS — без него весь текст виден (SEO/fallback)
@@ -185,8 +192,8 @@ onMounted(() => {
         <p>
           В это время начали появляться клубы, которые позднее станут важной частью истории
           грузинской лиги. Одним из наиболее известных стал <strong>Tbilisi Crusaders</strong>,
-          основанный в 2013 году. Позже появился <strong>Kutaisi Lions</strong> (2015), а в
-          2016 году — <strong>AFC Tbilisi</strong>.
+          основанный в 2013 году. Позже появились <strong>Rustavi Steelers</strong>,
+          <strong>AFC Tbilisi</strong> и <strong>Tbilisi Eagles</strong>.
         </p>
         <p>
           Американский футбол постепенно начал выходить за пределы столицы. Команды и проекты
@@ -194,6 +201,10 @@ onMounted(() => {
           переставал быть исключительно тбилисским явлением.
         </p>
       </section>
+
+      <figure class="gallery">
+        <PhotoCarousel :images="galleryImages2012" />
+      </figure>
 
       <section>
         <h2>2017 — начало современной эры чемпионата</h2>
