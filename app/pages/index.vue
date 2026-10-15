@@ -168,6 +168,9 @@ function onImgUp() {
 
   <!-- Всё под hero на золотом grunge-фоне (мазки по краям, тёмный центр) -->
   <div class="below-hero">
+  <!-- Золотой grunge-фон отдельным фиксированным слоём: cover относительно
+       экрана, поэтому мазки видны по краям и на телефоне (как на десктопе). -->
+  <div class="grunge-bg" aria-hidden="true" />
   <!-- Бесшовное появление фонового свечения после hero -->
   <div class="after-hero-fade" aria-hidden="true" />
 
@@ -266,6 +269,7 @@ function onImgUp() {
 <style scoped>
 .hero {
   position: relative;
+  z-index: 1; /* над фиксированным .grunge-bg: в зоне hero золото не просвечивает */
   min-height: 100vh;
   min-height: 100svh;
   overflow: hidden;
@@ -286,24 +290,38 @@ function onImgUp() {
 }
 
 /* Золотой grunge-фон под всеми секциями кроме hero.
-   Мазки по краям, тёмный центр; зафиксирован, затемнён для читаемости контента */
+   isolation — локальный контекст наложения: фон-слой уходит под контент,
+   а весь контент (секции) поднимается над ним. */
 .below-hero {
   position: relative;
+  isolation: isolate;
   background-color: #000000;
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)),
-    url('/gold-brush-bg.webp');
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, cover;
-  background-position: center, center;
-  background-attachment: fixed, fixed;
 }
+/* Фон-слой: НЕ background-attachment: fixed (глючит на iOS/мобильных),
+   а реальный фиксированный элемент. cover считается от вьюпорта, поэтому
+   золотые мазки по краям картинки видны на любом экране — и на телефоне. */
+.grunge-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)),
+    url('/gold-brush-bg.webp') center center / cover no-repeat;
+}
+/* Весь контент блока — над фон-слоём */
+.below-hero > :not(.grunge-bg) {
+  position: relative;
+  z-index: 1;
+}
+/* На узком портретном экране cover показал бы только чёрный центр панорамной
+   картинки. Поэтому вписываем её по ширине экрана (золотые мазки ложатся по
+   краям) и повторяем по вертикали — золото тянется лентами по обоим бокам. */
 @media (max-width: 860px) {
-  /* На мобильных fixed-фон глючит — прижимаем к блоку и повторяем по вертикали */
-  .below-hero {
-    background-attachment: scroll, scroll;
-    background-size: cover, 180% auto;
-    background-position: center, center top;
+  .grunge-bg {
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+      url('/gold-brush-bg.webp') center top / 100% auto repeat-y;
   }
 }
 
