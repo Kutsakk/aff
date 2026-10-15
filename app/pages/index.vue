@@ -21,6 +21,20 @@ onMounted(() => {
   const apply = () => { isDesktop.value = mq.matches }
   apply()
   mq.addEventListener('change', apply)
+
+  // Карточки «начать играть»: на тач-экранах нет hover, поэтому подсвечиваем
+  // (как при наведении) ту карточку, что по центру экрана при скролле — по
+  // очереди Flag → Tackle. На десктопе эффект даёт обычный :hover.
+  const cards = document.querySelectorAll('.play-card')
+  if ('IntersectionObserver' in window && cards.length) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) e.target.classList.toggle('is-inview', e.isIntersecting)
+      },
+      { rootMargin: '-42% 0px -42% 0px' }, // активна, когда карточка в центре экрана
+    )
+    cards.forEach(c => io.observe(c))
+  }
 })
 
 // ===== Перетаскивание надписи мышью/пальцем (только в режиме editing) =====
@@ -976,7 +990,7 @@ function onImgUp() {
       url('/trophy-cup.webp');
     background-repeat: no-repeat, no-repeat;
     background-size: cover, 96% auto;
-    background-position: center, center top 8%;
+    background-position: center, center top 60%;
     filter: brightness(1.12) saturate(1.08);
     opacity: 1;
   }
@@ -997,6 +1011,20 @@ function onImgUp() {
   .rules-teaser { padding: 56px clamp(18px, 5vw, 40px); }
   .play-card { min-height: 340px; padding: 26px; }
   .event--feature { min-height: 240px; }
+
+  /* Нет hover на тач-экранах — повторяем hover-эффект для карточки,
+     которую IntersectionObserver пометил как «в центре экрана». */
+  .play-card.is-inview {
+    transform: translateY(-5px);
+    box-shadow: 0 26px 60px -26px rgba(0, 0, 0, 0.85);
+  }
+  .play-card.is-inview .play-card__photo {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .play-card.is-inview .play-card__photo::after {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.45) 52%, rgba(0, 0, 0, 0.9) 100%);
+  }
 }
 @media (max-width: 420px) {
   .stats { grid-template-columns: 1fr 1fr; gap: 20px 18px; }
