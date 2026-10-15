@@ -39,7 +39,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   <header class="nav-wrap" :class="{ scrolled }">
     <!-- Лого — слева, отдельно от пилюли (как было) -->
     <NuxtLink to="/" class="brand" @click="open = false">
-      <img src="/logoaff.png" alt="AFF" class="brand-logo">
+      <img src="/logoaff.webp" alt="AFF" class="brand-logo">
       <span class="brand-title">AFF</span>
     </NuxtLink>
 

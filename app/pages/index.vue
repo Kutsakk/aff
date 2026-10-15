@@ -43,8 +43,8 @@ onMounted(() => {
     const onFill = () => {
       const r = rulesBtn.getBoundingClientRect()
       const vh = window.innerHeight
-      const start = vh * 0.92 // кнопка только появилась снизу — пусто
-      const end = vh * 0.4 // поднялась к центру — полная заливка
+      const start = vh * 0.98 // кнопка только появилась снизу — пусто
+      const end = vh * 0.68 // поднялась в нижнюю треть — уже полная заливка
       const p = Math.min(1, Math.max(0, (start - r.top) / (start - end)))
       rulesBtn.style.setProperty('--fill', p.toFixed(3))
       rulesBtn.classList.toggle('filled', p > 0.5)
@@ -130,8 +130,10 @@ function onImgUp() {
       @pointercancel="onImgUp"
     >
       <img
-        src="/hero-gold.png"
+        src="/hero-gold.webp"
         alt="American Football Federation of Georgia"
+        fetchpriority="high"
+        decoding="async"
         :style="{
           transform: `scale(${controls.imgScale}) translate(${controls.imgX - 50}%, ${controls.imgY - 50}%)`,
         }"
@@ -208,7 +210,7 @@ function onImgUp() {
   <!-- Кто мы + цифры -->
   <section class="intro" :style="isDesktop ? blockStyle : undefined">
     <div class="intro__figure" aria-hidden="true">
-      <img src="/trophy-cup.webp" class="intro__trophy" :style="figureStyle" alt="" aria-hidden="true">
+      <img src="/trophy-cup.webp" class="intro__trophy" :style="figureStyle" alt="" aria-hidden="true" loading="lazy" decoding="async">
     </div>
 
     <div class="intro__text">
@@ -223,11 +225,11 @@ function onImgUp() {
       <div class="stat"><b>2011</b><span>{{ t.home.statFounded }}</span></div>
       <div class="stat"><b>15+</b><span>{{ t.home.statYears }}</span></div>
       <div class="stat stat--bsb">
-        <img src="/blackseaball.webp" alt="Black Sea Bowl" class="stat__logo" :style="isDesktop ? bsbStyle : undefined">
+        <img src="/blackseaball.webp" alt="Black Sea Bowl" class="stat__logo" :style="isDesktop ? bsbStyle : undefined" loading="lazy" decoding="async">
         <span>{{ t.home.statNations }}</span>
       </div>
       <div class="stat stat--ifaf">
-        <img src="/logo-mark.png" alt="IFAF" class="stat__mark" :style="isDesktop ? ifafStyle : undefined">
+        <img src="/logo-mark.png" alt="IFAF" class="stat__mark" :style="isDesktop ? ifafStyle : undefined" loading="lazy" decoding="async">
         <span>{{ t.home.statIfaf }}</span>
       </div>
     </div>
@@ -350,9 +352,13 @@ function onImgUp() {
    цельная композиция — никакого тайлинга. */
 @media (max-width: 860px) {
   .grunge-bg {
+    /* position: absolute (не fixed): на мобильных fixed-фон дёргается при
+       скролле из-за сворачивания адресной строки. absolute скроллится вместе
+       с контентом — без рывков. Вертикальный кроп растянут на всю высоту. */
+    position: absolute;
     background:
       linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.58)),
-      url('/gold-brush-bg-mobile.webp') center center / cover no-repeat;
+      url('/gold-brush-bg-mobile.webp') center top / 100% 100% no-repeat;
   }
 }
 
