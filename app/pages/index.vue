@@ -35,6 +35,23 @@ onMounted(() => {
     )
     cards.forEach(c => io.observe(c))
   }
+
+  // Кнопка «Правила» наполняется золотом по скроллу: вниз — наполняется,
+  // вверх — опустошается, плавно следуя за положением раздела на экране.
+  const rulesBtn = document.querySelector<HTMLElement>('.rules-teaser .btn-gold')
+  if (rulesBtn) {
+    const onFill = () => {
+      const r = rulesBtn.getBoundingClientRect()
+      const vh = window.innerHeight
+      const start = vh * 0.92 // кнопка только появилась снизу — пусто
+      const end = vh * 0.4 // поднялась к центру — полная заливка
+      const p = Math.min(1, Math.max(0, (start - r.top) / (start - end)))
+      rulesBtn.style.setProperty('--fill', p.toFixed(3))
+      rulesBtn.classList.toggle('filled', p > 0.5)
+    }
+    window.addEventListener('scroll', onFill, { passive: true })
+    onFill()
+  }
 })
 
 // ===== Перетаскивание надписи мышью/пальцем (только в режиме editing) =====
@@ -794,25 +811,24 @@ function onImgUp() {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: url('/rulse.webp') center / cover no-repeat;
-  opacity: 0.52;
-  -webkit-mask:
-    linear-gradient(90deg, transparent 2%, #000 34%, #000 66%, transparent 98%),
-    linear-gradient(180deg, transparent 2%, #000 36%, #000 64%, transparent 98%);
-  -webkit-mask-composite: source-in;
-  mask:
-    linear-gradient(90deg, transparent 2%, #000 34%, #000 66%, transparent 98%),
-    linear-gradient(180deg, transparent 2%, #000 36%, #000 64%, transparent 98%);
-  mask-composite: intersect;
+  /* 76% — смещаем кадр к свистку (он в правой части картинки), ярче */
+  background: url('/rulse.webp') 76% center / cover no-repeat;
+  opacity: 0.9;
+  /* Растворяем только верх/низ; по бокам не гасим, иначе пропадает свисток */
+  -webkit-mask: linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
+  mask: linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
 }
 .rules-teaser__photo::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.3) 45%, rgba(0, 0, 0, 0.6) 100%);
+  /* Затемнение под текстом по центру (читаемость), края со свистком — ярче */
+  background:
+    radial-gradient(72% 52% at 50% 46%, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0.28) 62%, rgba(0, 0, 0, 0) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.12) 45%, rgba(0, 0, 0, 0.5) 100%);
 }
 .rules-teaser__text { position: relative; z-index: 1; max-width: 640px; }
-.rules-teaser p { margin: 0 auto 30px; font-size: 1.05rem; line-height: 1.7; color: rgba(255, 255, 255, 0.82); }
+.rules-teaser p { margin: 0 auto 30px; font-size: 1.05rem; line-height: 1.7; color: rgba(255, 255, 255, 0.82); text-shadow: 0 1px 10px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.95); }
 
 /* Кнопка: чёрная, золотые буквы; при наведении золото «заливается» слева направо */
 .btn-gold {
@@ -843,14 +859,17 @@ function onImgUp() {
   inset: 0;
   z-index: 0;
   background: linear-gradient(100deg, #9a7a2e, #e6c866 42%, #fff6d6 50%, #e6c866 58%, #9a7a2e);
-  transform: scaleX(0);
+  /* --fill задаётся по скроллу (JS): кнопка наполняется золотом по мере
+     приближения раздела к центру экрана. На десктопе :hover заливает её целиком. */
+  transform: scaleX(var(--fill, 0));
   transform-origin: left center;
-  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: transform 0.15s linear;
 }
-.btn-gold:hover::before,
-.btn-gold:focus-visible::before { transform: scaleX(1); }
+.btn-gold:hover,
+.btn-gold:focus-visible { --fill: 1; }
 .btn-gold:hover span,
-.btn-gold:focus-visible span { color: #1a1206; }
+.btn-gold:focus-visible span,
+.btn-gold.filled span { color: #1a1206; }
 
 /* Событие — одна крупная кликабельная карточка */
 .events--single { display: flex; justify-content: center; }
