@@ -106,12 +106,6 @@ onMounted(() => {
     </header>
 
     <article class="prose">
-      <!-- Галерея раздела: coverflow-карусель (десктоп — перетаскивание,
-           телефон — свайпы) -->
-      <figure class="gallery">
-        <PhotoCarousel :images="galleryImages" />
-      </figure>
-
       <section data-year="2010">
         <h2>Первые шаги: до создания федерации</h2>
         <p>
@@ -139,6 +133,12 @@ onMounted(() => {
           организованная грузинская система американского футбола.
         </p>
       </section>
+
+      <!-- Галерея раздела: coverflow-карусель (десктоп — перетаскивание,
+           телефон — свайпы) -->
+      <figure class="gallery">
+        <PhotoCarousel :images="galleryImages" />
+      </figure>
 
       <section>
         <h2>2011 — создание Федерации американского футбола Грузии</h2>
