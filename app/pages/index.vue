@@ -872,6 +872,21 @@ function onImgUp() {
   -webkit-mask: linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
   mask: linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
 }
+/* Десктоп: растворяем края и по бокам тоже — фото ложится на золотой фон
+   без швов. Правый край растворяем мягче, чтобы свисток остался виден.
+   На телефоне маска остаётся прежней (только верх/низ). */
+@media (min-width: 861px) {
+  .rules-teaser__photo {
+    -webkit-mask:
+      linear-gradient(90deg, transparent 0%, #000 15%, #000 86%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 13%, #000 87%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask:
+      linear-gradient(90deg, transparent 0%, #000 15%, #000 86%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 13%, #000 87%, transparent 100%);
+    mask-composite: intersect;
+  }
+}
 .rules-teaser__photo::after {
   content: "";
   position: absolute;
