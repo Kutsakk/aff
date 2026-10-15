@@ -10,6 +10,14 @@ const galleryImages = [
   { src: '/gallery-4.webp', alt: 'Игроки сборной' },
   { src: '/gallery-5.webp', alt: 'Турнир' },
 ]
+// Галерея к периоду создания федерации (2011)
+const galleryImages2011 = [
+  { src: '/gallery-6.webp', alt: 'Ранние годы федерации' },
+  { src: '/gallery-7.webp', alt: 'Первые команды' },
+  { src: '/gallery-8.webp', alt: 'Тренировки' },
+  { src: '/gallery-9.webp', alt: 'Матч' },
+  { src: '/gallery-10.webp', alt: 'Игроки' },
+]
 
 onMounted(() => {
   // Начальное скрытие включаем только при живом JS — без него весь текст виден (SEO/fallback)
@@ -143,7 +151,8 @@ onMounted(() => {
         </p>
         <p>
           На раннем этапе движение было совсем небольшим. По сохранившимся материалам, в
-          начале существовали всего две команды. Игроки и тренеры должны были получать
+          начале существовали всего две команды — <strong>Crusaders</strong> и
+          <strong>Grizzlies</strong>. Игроки и тренеры должны были получать
           знания и опыт за пределами страны — в Европе и США.
         </p>
         <p>
@@ -160,9 +169,8 @@ onMounted(() => {
         </p>
       </section>
 
-      <figure class="photo photo--portrait-row">
-        <span class="photo__tag">Фото</span>
-        <span class="photo__hint">Амиран Кирия · у истоков федерации</span>
+      <figure class="gallery">
+        <PhotoCarousel :images="galleryImages2011" />
       </figure>
 
       <section>
