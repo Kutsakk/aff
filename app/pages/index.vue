@@ -939,7 +939,8 @@ function onImgUp() {
     width: 100%;
     height: 100%;
     object-fit: cover !important;
-    object-position: 72% center;
+    /* 88% — мяч виден целиком и не прижат к правому краю, шлем+мяч по центру */
+    object-position: 88% center;
     transform: none !important;
   }
 
@@ -966,15 +967,17 @@ function onImgUp() {
     padding-top: clamp(56px, 9vh, 90px);
     min-height: auto; /* на телефоне одна колонка — фикс. высота не нужна */
   }
-  /* На телефоне контент в один столбец — трофей сверху-по центру, мягко приглушён */
+  /* Стадион (PNG с прозрачным фоном) сверху + лёгкое затемнение только под
+     заголовком. Плотная чёрная подложка убрана, чтобы золотой grunge-фон был
+     виден под блоком (как в остальных секциях). Стадион чуть ярче. */
   .intro__figure {
     background:
-      radial-gradient(60% 40% at 50% 22%, rgba(230, 200, 102, 0.16) 0%, transparent 70%),
-      linear-gradient(180deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.86) 45%, rgba(0, 0, 0, 0.92) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.28) 34%, rgba(0, 0, 0, 0) 58%),
       url('/trophy-cup.webp');
-    background-repeat: no-repeat, no-repeat, no-repeat;
-    background-size: cover, cover, 92% auto;
-    background-position: center, center, center top 6%;
+    background-repeat: no-repeat, no-repeat;
+    background-size: cover, 96% auto;
+    background-position: center, center top 8%;
+    filter: brightness(1.12) saturate(1.08);
     opacity: 1;
   }
   .stat b { font-size: 2.4rem; }

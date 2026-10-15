@@ -465,6 +465,8 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 @media (max-width: 860px) {
   .pill { display: none; }
   .burger { display: flex; }
+  /* Лого и бургер были прижаты к самому верху — опускаем ниже */
+  .nav-wrap { top: 30px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
