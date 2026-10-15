@@ -150,7 +150,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   height: 96px;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(7, 6, 8, 0.94) 0%, rgba(7, 6, 8, 0.72) 45%, rgba(7, 6, 8, 0) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.72) 45%, rgba(0, 0, 0, 0) 100%);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   -webkit-mask: linear-gradient(180deg, #000 55%, transparent 100%);
@@ -172,7 +172,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   /* Двойной фон: стеклянная подложка (padding-box) + бело-золотая
      рамка-градиент (border-box), которую гоняет анимация блика. */
   background:
-    linear-gradient(rgba(12, 11, 13, 0.62), rgba(10, 9, 11, 0.5)) padding-box,
+    linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.5)) padding-box,
     linear-gradient(
       110deg,
       rgba(255, 255, 255, 0.28) 0%,
@@ -255,25 +255,41 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 .links {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* center + постоянный gap: пробелы между ссылками не «перетекают»
+     при смене языка, а фикс. ширина держит пилюлю на месте */
+  justify-content: center;
   gap: clamp(4px, 1vw, 10px);
-  /* Фиксируем ширину меню, чтобы навбар не «прыгал» при смене языка */
-  min-width: 740px;
+  width: 740px;
 }
 .link {
-  padding: 7px 13px;
+  position: relative;
+  padding: 7px 14px;
   border-radius: 999px;
   font-size: 0.86rem;
   font-weight: 500;
   color: rgba(236, 232, 245, 0.68);
   text-decoration: none;
   white-space: nowrap;
-  transition: color 0.2s ease, background 0.2s ease;
+  transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
-.link:hover { color: #fff; }
-.link.on {
+/* Ховер неактивных — лёгкий золотистый подсвет */
+.link:not(.on):hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Активный раздел — тёмная пилюля с яркой золотой светящейся обводкой
+   (мини-версия пилюли навбара), чёрный текст */
+.link.on {
+  color: #0d0a03;
+  font-weight: 700;
+  background:
+    radial-gradient(120% 150% at 50% 48%, rgba(214, 176, 92, 0.95) 0%, rgba(150, 120, 54, 0.9) 42%, rgba(60, 47, 20, 0.95) 80%, rgba(20, 16, 8, 0.96) 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(246, 227, 160, 0.92),
+    inset 0 0 14px rgba(230, 200, 102, 0.35),
+    0 0 18px -2px rgba(230, 200, 102, 0.55),
+    0 6px 18px -8px rgba(0, 0, 0, 0.85);
 }
 .link--live { position: relative; }
 .live-dot {
@@ -351,6 +367,12 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   box-shadow: 0 6px 18px rgba(201, 168, 76, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.5s ease;
 }
+/* Фикс. ширина CTA под самый длинный язык (ka) — хвост не меняет
+   размер при смене языка, поэтому пилюля не прыгает */
+.pill .cta {
+  min-width: 190px;
+  justify-content: center;
+}
 .cta svg { width: 14px; height: 14px; transition: transform 0.2s ease; }
 .cta:hover {
   transform: translateY(-1px);
@@ -373,7 +395,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   height: 44px;
   padding: 0 10px;
   border-radius: 999px;
-  background: rgba(10, 9, 11, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(201, 168, 76, 0.4);
   backdrop-filter: blur(10px);
   cursor: pointer;
@@ -400,7 +422,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   flex-direction: column;
   padding: 12px;
   border-radius: 20px;
-  background: rgba(10, 9, 11, 0.9);
+  background: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(22px);
   border: 1px solid rgba(201, 168, 76, 0.3);
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.6);
@@ -412,8 +434,18 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   color: rgba(236, 232, 245, 0.82);
   text-decoration: none;
 }
-.m-link:hover,
-.m-link.active { color: #fff; background: rgba(255, 255, 255, 0.06); }
+.m-link:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+/* Активный раздел в мобильном меню — тёмная пилюля с золотой обводкой, чёрный текст */
+.m-link.active {
+  color: #0d0a03;
+  font-weight: 700;
+  background:
+    radial-gradient(120% 150% at 50% 48%, rgba(214, 176, 92, 0.95) 0%, rgba(150, 120, 54, 0.9) 42%, rgba(60, 47, 20, 0.95) 80%, rgba(20, 16, 8, 0.96) 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(246, 227, 160, 0.92),
+    inset 0 0 14px rgba(230, 200, 102, 0.35),
+    0 0 18px -2px rgba(230, 200, 102, 0.55);
+}
 .mobile-foot {
   display: flex;
   align-items: center;

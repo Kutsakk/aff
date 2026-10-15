@@ -1,36 +1,93 @@
 <script setup lang="ts">
-// О нас — история американского футбола в Грузии. Текст + заглушки под фото.
+// О нас — история как рассказ: зигзаг-таймлайн, текст/фото выезжают при скролле.
 useHead({ title: 'О нас — American Football Federation of Georgia' })
+
+onMounted(() => {
+  // Начальное скрытие включаем только при живом JS — без него весь текст виден (SEO/fallback)
+  document.documentElement.classList.add('about-reveal')
+
+  // Год-метки «как счёт на поле»: год из начала заголовка (или из data-year),
+  // крупной меткой; дублирующий год-префикс из самого заголовка убираем
+  document.querySelectorAll<HTMLElement>('.prose > section').forEach((sec) => {
+    const h2 = sec.querySelector('h2')
+    if (!h2) return
+    const text = h2.textContent ?? ''
+    const m = text.match(/^\s*(20\d\d)/)
+    const year = m?.[1] ?? sec.dataset.year
+    if (!year) return
+    if (m) h2.textContent = text.replace(/^[^—]*—\s*/, '') // убираем «2011 — » / «2012–2016 — »
+    const span = document.createElement('span')
+    span.className = 'yard-year'
+    span.textContent = year
+    span.setAttribute('aria-hidden', 'true')
+    sec.prepend(span)
+  })
+
+  const els = document.querySelectorAll<HTMLElement>(
+    '.about-hero, .prose > section, .prose > figure',
+  )
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        // Появляется при входе в экран, стирается обратно при выходе — в обе стороны скролла
+        for (const e of entries)
+          e.target.classList.toggle('in', e.isIntersecting)
+      },
+      { threshold: 0, rootMargin: '-6% 0px -18% 0px' },
+    )
+    els.forEach(el => io.observe(el))
+  }
+  else {
+    els.forEach(el => el.classList.add('in'))
+  }
+
+  // Шапка плавно уходит в тень при скролле вниз
+  const hero = document.querySelector<HTMLElement>('.about-hero')
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (hero && !reduce) {
+    const onScroll = () => {
+      const p = Math.min(window.scrollY / 560, 1)
+      hero.style.opacity = String(1 - p)
+      hero.style.transform = `translateY(${(-window.scrollY * 0.16).toFixed(1)}px)`
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
+  }
+})
 </script>
 
 <template>
   <main class="about">
-    <!-- Шапка раздела -->
+    <!-- Шапка раздела: текст выезжает слева, логотип — справа, встают рядом -->
     <header class="about-hero">
-      <span class="kicker">О федерации</span>
-      <h1>История американского футбола в Грузии</h1>
-      <p class="lead">
-        Американский футбол в Грузии — это история не одного клуба и не одного поколения
-        игроков. Это история, которая началась с небольшого сообщества энтузиастов,
-        постепенно превратилась в национальную спортивную систему, пережила годы роста,
-        пандемию и кризис клубного футбола, а затем вышла на международную арену.
-      </p>
-      <p>
-        Сегодня грузинская сборная участвует в международных соревнованиях, в Тбилиси
-        приезжают команды из разных стран, а Грузия впервые в своей истории вошла в
-        официальный европейский цикл IFAF по tackle football. Но путь к этому занял более
-        пятнадцати лет.
-      </p>
+      <div class="about-hero__text">
+        <span class="kicker">О федерации</span>
+        <h1>История американского футбола в Грузии</h1>
+        <p class="lead">
+          Американский футбол в Грузии — это история не одного клуба и не одного поколения
+          игроков. Это история, которая началась с небольшого сообщества энтузиастов,
+          постепенно превратилась в национальную спортивную систему, пережила годы роста,
+          пандемию и кризис клубного футбола, а затем вышла на международную арену.
+        </p>
+        <p>
+          Сегодня грузинская сборная участвует в международных соревнованиях, в Тбилиси
+          приезжают команды из разных стран, а Грузия впервые в своей истории вошла в
+          официальный европейский цикл IFAF по tackle football. Но путь к этому занял более
+          пятнадцати лет.
+        </p>
+      </div>
+      <img src="/logo-aff.webp" alt="American Football Federation of Georgia" class="about-hero__logo">
     </header>
 
     <article class="prose">
-      <!-- Заглушка под общее фото -->
-      <figure class="photo photo--wide">
-        <span class="photo__tag">Фото</span>
-        <span class="photo__hint">Главное фото раздела — команда / поле</span>
+      <!-- Главное фото раздела -->
+      <figure class="photo photo--wide photo--img">
+        <img src="/about-1.webp" alt="Игроки сборной Грузии выходят на стадион" loading="lazy">
       </figure>
 
-      <section>
+      <section data-year="2010">
         <h2>Первые шаги: до создания федерации</h2>
         <p>
           Одни из первых документально подтверждённых свидетельств существования
@@ -438,15 +495,31 @@ useHead({ title: 'О нас — American Football Federation of Georgia' })
 
 <style scoped>
 .about {
-  background: transparent;
+  position: relative;
   color: rgba(255, 255, 255, 0.82);
   padding: clamp(120px, 14vh, 180px) clamp(20px, 6vw, 48px) 120px;
+  background: transparent;
 }
 
-/* ===== Шапка раздела ===== */
+/* ===== Шапка раздела: заголовок + вводный текст на фоне грузинского флага ===== */
 .about-hero {
-  max-width: 860px;
-  margin: 0 auto 56px;
+  position: relative;
+  max-width: 1040px;
+  margin: 0 auto 88px;
+  display: grid;
+  grid-template-columns: 1.12fr 0.88fr;
+  align-items: center;
+  gap: clamp(20px, 4vw, 56px);
+}
+.about-hero__text { position: relative; }
+/* Логотип — яркий золотой объект справа, с мягким свечением */
+.about-hero__logo {
+  display: block;
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  justify-self: end;
+  filter: brightness(1.12) drop-shadow(0 0 34px rgba(230, 200, 102, 0.3));
 }
 .kicker {
   display: inline-block;
@@ -472,14 +545,90 @@ useHead({ title: 'О нас — American Football Federation of Georgia' })
   font-size: clamp(1.05rem, 2vw, 1.3rem);
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.92);
+  max-width: 620px;
+}
+
+/* ===== Reveal по скроллу: рассказ-зигзаг =====
+   Шапка: текст выезжает слева, логотип — справа, встают рядом.
+   Главы: текст слева, фото — справа. Скрыто только при живом JS. */
+.about-reveal .about-hero__text {
+  opacity: 0;
+  transform: translateX(-54px);
+}
+.about-reveal .about-hero__logo {
+  opacity: 0;
+  transform: translateX(54px);
+}
+.about-reveal .prose > section {
+  opacity: 0;
+  transform: translateX(-46px);
+}
+.about-reveal .prose > figure {
+  opacity: 0;
+  transform: translateX(46px) scale(0.97);
+}
+.about-reveal .about-hero__text,
+.about-reveal .about-hero__logo,
+.about-reveal .prose > section,
+.about-reveal .prose > figure {
+  transition:
+    opacity 1.4s ease,
+    transform 1.7s cubic-bezier(0.2, 0.75, 0.25, 1);
+  will-change: opacity, transform;
+}
+.about-hero.in .about-hero__text,
+.about-hero.in .about-hero__logo,
+.about-reveal .prose > section.in,
+.about-reveal .prose > figure.in {
+  opacity: 1;
+  transform: none;
 }
 
 /* ===== Текст ===== */
 .prose {
-  max-width: 760px;
+  position: relative;
+  max-width: 880px;
   margin: 0 auto;
 }
-.prose section { margin: 52px 0; }
+/* Ось истории — боковая линия поля с ярдовыми насечками, вынесена левее текста */
+.prose::before {
+  content: "";
+  position: absolute;
+  left: -40px;
+  top: 8px;
+  bottom: 8px;
+  width: 16px;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(240, 226, 170, 0.6) 0, rgba(240, 226, 170, 0.6) 100%) left / 3px 100% no-repeat,
+    repeating-linear-gradient(180deg, rgba(240, 226, 170, 0.34) 0 2px, transparent 2px 34px);
+  -webkit-mask: linear-gradient(180deg, transparent, #000 7%, #000 93%, transparent);
+  mask: linear-gradient(180deg, transparent, #000 7%, #000 93%, transparent);
+}
+.prose section {
+  position: relative;
+  margin: 92px 0;
+  padding-left: 4px;
+}
+/* Год главы — крупная «табло»-цифра, как счёт на поле.
+   :deep — элемент создаётся из JS и не несёт scoped-атрибута */
+:deep(.yard-year) {
+  display: block;
+  margin-bottom: 4px;
+  font-family: 'Teko', 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+  line-height: 0.85;
+  letter-spacing: 0.03em;
+  background: linear-gradient(180deg, #fff6d4, #e6c866 55%, #c9a84c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+  pointer-events: none;
+}
+/* У глав с годом-меткой убираем дублирующую золотую чёрточку над заголовком */
+:deep(.yard-year + h2)::before { display: none; }
 .prose h2 {
   margin: 0 0 18px;
   font-family: 'Oswald', sans-serif;
@@ -618,16 +767,42 @@ useHead({ title: 'О нас — American Football Federation of Georgia' })
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 40px 0;
+  margin: 72px 0;
   aspect-ratio: 16 / 9;
-  border-radius: 18px;
+  border-radius: 20px;
   background:
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0 12px, transparent 12px 24px),
+    repeating-linear-gradient(45deg, rgba(201, 168, 76, 0.04) 0 14px, transparent 14px 28px),
+    radial-gradient(120% 140% at 50% 0%, rgba(201, 168, 76, 0.08), transparent 65%),
     rgba(255, 255, 255, 0.02);
-  border: 1.5px dashed rgba(201, 168, 76, 0.4);
+  border: 1.5px dashed rgba(201, 168, 76, 0.45);
+  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .photo--wide { aspect-ratio: 21 / 9; }
 .photo--portrait-row { aspect-ratio: 2 / 1; }
+/* Реальное фото — без рамки, края затемнены (боковая и верх/низ виньетка) */
+.photo--img {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  background: #000;
+  box-shadow: none;
+}
+.photo--img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.photo--img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.35) 12%, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.35) 88%, #000 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, transparent 20%, transparent 78%, rgba(0, 0, 0, 0.6) 100%);
+}
 .photo__tag {
   font-family: 'Oswald', sans-serif;
   font-size: 0.8rem;
@@ -640,10 +815,45 @@ useHead({ title: 'О нас — American Football Federation of Georgia' })
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* На телефоне зигзаг схлопывается: всё всплывает СНИЗУ (без боковых выездов) */
+@media (max-width: 760px) {
+  .about-hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    text-align: left;
+  }
+  .about-hero__logo {
+    order: -1; /* логотип сверху, как эмблема */
+    max-width: 220px;
+    justify-self: start;
+  }
+  .about-reveal .about-hero__text,
+  .about-reveal .about-hero__logo,
+  .about-reveal .prose > section,
+  .about-reveal .prose > figure {
+    transform: translateY(34px) scale(1);
+  }
+  .prose::before { left: -14px; }
+  .prose section { padding-left: 2px; }
+}
+
+/* Уважаем системную настройку «меньше движения» — показываем сразу, без анимации */
+@media (prefers-reduced-motion: reduce) {
+  .about-reveal .about-hero__text,
+  .about-reveal .about-hero__logo,
+  .about-reveal .prose > section,
+  .about-reveal .prose > figure {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 @media (max-width: 560px) {
   .match { grid-template-columns: 1fr; gap: 6px; text-align: center; }
   .match__team:first-child,
   .match__team:last-child { text-align: center; }
   .prose ul.flags { grid-template-columns: 1fr; }
+  .about-hero { padding: 28px 22px; }
 }
 </style>

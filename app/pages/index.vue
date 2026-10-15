@@ -2,9 +2,9 @@
 // Главная — hero + блок «Федерация». Все размеры/позиции зашиты в дефолты
 // composable'ов (useHeroControls / useIntroControls), панели настройки убраны.
 const route = useRoute()
-const { t, locale } = useLocale()
-const { controls, editing, set, load } = useHeroControls()
-const { figureStyle, bsbStyle, ifafStyle, blockStyle } = useIntroControls()
+const { t } = useLocale()
+const { controls, editing, set } = useHeroControls()
+const { figureStyle, bsbStyle, ifafStyle, blockStyle, load: loadIntro } = useIntroControls()
 
 // Панель настройки надписи показываем только по адресу ?edit — на боевом сайте её нет
 const showPanel = computed(() => 'edit' in route.query)
@@ -13,7 +13,10 @@ const showPanel = computed(() => 'edit' in route.query)
 // экранах их отключаем, иначе контент уезжает за край.
 const isDesktop = ref(true)
 onMounted(() => {
-  load() // подхватываем сохранённые размер/позицию надписи
+  // Старая панель hero удалена: стираем случайно сохранённые правки фото/надписи,
+  // чтобы hero всегда показывался с запечённой композицией (HERO_DEFAULTS).
+  try { localStorage.removeItem('aff-hero-controls') } catch { /* приватный режим */ }
+  loadIntro() // подхватываем сохранённые размер/позицию/блики трофея
   const mq = window.matchMedia('(min-width: 900px)')
   const apply = () => { isDesktop.value = mq.matches }
   apply()
@@ -125,7 +128,7 @@ function onImgUp() {
         <span>{{ t.home.heroLine3 }}</span>
       </h1>
 
-      <p class="hero-tag" :class="'hero-tag--' + locale">
+      <p class="hero-tag">
         <span class="hero-tag__line">
           <span
             v-for="(tok, i) in t.home.heroTag.line1"
@@ -158,15 +161,21 @@ function onImgUp() {
       </div>
     </div>
 
-    <HeroControls v-if="showPanel" />
   </section>
 
+  <!-- Панель управления трофеем/логотипами блока «Федерация» (по ?edit) -->
+  <IntroControls v-if="showPanel" />
+
+  <!-- Всё под hero на золотом grunge-фоне (мазки по краям, тёмный центр) -->
+  <div class="below-hero">
   <!-- Бесшовное появление фонового свечения после hero -->
   <div class="after-hero-fade" aria-hidden="true" />
 
   <!-- Кто мы + цифры -->
   <section class="intro" :style="isDesktop ? blockStyle : undefined">
-    <div class="intro__figure" aria-hidden="true" />
+    <div class="intro__figure" aria-hidden="true">
+      <img src="/trophy-cup.webp" class="intro__trophy" :style="figureStyle" alt="" aria-hidden="true">
+    </div>
 
     <div class="intro__text">
       <span class="eyebrow">{{ t.home.introEyebrow }}</span>
@@ -251,6 +260,7 @@ function onImgUp() {
       </NuxtLink>
     </div>
   </section>
+  </div>
 </template>
 
 <style scoped>
@@ -260,6 +270,41 @@ function onImgUp() {
   min-height: 100svh;
   overflow: hidden;
   background: #000000;
+}
+
+/* Низ hero плавно растворяется в чёрный — без шва при переходе к grunge-фону */
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34vh;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.55) 55%, #000000 100%);
+}
+
+/* Золотой grunge-фон под всеми секциями кроме hero.
+   Мазки по краям, тёмный центр; зафиксирован, затемнён для читаемости контента */
+.below-hero {
+  position: relative;
+  background-color: #000000;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)),
+    url('/gold-brush-bg.webp');
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, cover;
+  background-position: center, center;
+  background-attachment: fixed, fixed;
+}
+@media (max-width: 860px) {
+  /* На мобильных fixed-фон глючит — прижимаем к блоку и повторяем по вертикали */
+  .below-hero {
+    background-attachment: scroll, scroll;
+    background-size: cover, 180% auto;
+    background-position: center, center top;
+  }
 }
 
 /* Нижнее затемнение отражения временно отключено — фото показываем как есть */
@@ -292,8 +337,8 @@ function onImgUp() {
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(8, 6, 10, 0.6) 0%,
-    rgba(8, 6, 10, 0.22) 26%,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.22) 26%,
     transparent 48%
   );
 }
@@ -361,14 +406,14 @@ function onImgUp() {
     drop-shadow(0 0 34px rgba(230, 200, 102, 0.5));
 }
 
-/* ===== Слоган hero: единый бело-золотой перелив, Audiowide ===== */
+/* ===== Слоган hero: единый бело-золотой перелив, один шрифт для всех языков ===== */
 .hero-tag {
   margin: clamp(26px, 4.4vh, 48px) 0 0;
-  font-family: 'Audiowide', 'Manrope', 'Noto Sans Georgian', sans-serif;
-  font-weight: 400;
-  font-size: clamp(1.4rem, 2.25vw, 2.3rem);
+  font-family: 'Manrope', 'Noto Sans Georgian', sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.18rem, 1.85vw, 1.8rem);
   line-height: 1.3;
-  letter-spacing: 0.015em;
+  letter-spacing: 0.005em;
 }
 .hero-tag__line { display: block; }
 /* Вторая строка — лёгкой ступенькой */
@@ -380,16 +425,6 @@ function onImgUp() {
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
-}
-
-/* Грузинский/русский: Audiowide не поддерживает эти алфавиты — берём чистый
-   гротеск и меньший кегль, чтобы буквы не были громоздкими */
-.hero-tag--ka,
-.hero-tag--ru {
-  font-family: 'Manrope', 'Noto Sans Georgian', sans-serif;
-  font-weight: 600;
-  font-size: clamp(1.18rem, 1.85vw, 1.8rem);
-  letter-spacing: 0.005em;
 }
 
 /* ===== Кнопки hero ===== */
@@ -453,6 +488,7 @@ function onImgUp() {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-gold-light, #e6c866);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 0.9);
 }
 .intro h2,
 .band__head h2,
@@ -464,6 +500,8 @@ function onImgUp() {
   line-height: 1.1;
   font-size: clamp(1.5rem, 3.2vw, 2.4rem);
   color: #fff;
+  /* Тень привязана к буквам — читаемость поверх grunge-фона без тёмной плашки */
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.92), 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 0.9);
 }
 
 /* Растворитель свечения на стыке hero → контент (full-bleed, не занимает поток) */
@@ -480,7 +518,7 @@ function onImgUp() {
   top: 0;
   height: 46vh;
   pointer-events: none;
-  background: linear-gradient(180deg, #0b0b0c 0%, rgba(11, 11, 12, 0.72) 32%, rgba(11, 11, 12, 0.3) 62%, transparent 100%);
+  background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.72) 32%, rgba(0, 0, 0, 0.3) 62%, transparent 100%);
 }
 
 /* Интро + цифры */
@@ -494,39 +532,32 @@ function onImgUp() {
   max-width: 1120px;
   margin: 0 auto;
   padding: clamp(70px, 10vh, 120px) clamp(20px, 6vw, 48px);
-  overflow: hidden;
+  /* visible — трофей не обрезается при настройке позиции/размера из панели */
+  overflow: visible;
 }
 
-/* Силуэт квотербека — фоновый арт слева, золото картинки сливается со свечением,
-   чёрный силуэт растворяется в тёмный фон, края замаскированы. */
-/* Фон секции «Федерация» — фото Golden Football Glory. Субъект справа,
-   слева тёмный градиент под текст; края растворяются в фон страницы без швов. */
+/* Фон секции «Федерация» — только трофей-кубок + мягкое золотое свечение.
+   Никаких прямоугольных тёмных слоёв и масок: grunge-фон просвечивает,
+   трофей показан целиком и не обрезается. Читаемость — через ореолы у текста/цифр. */
 .intro__figure {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(10, 9, 11, 0.96) 0%,
-      rgba(10, 9, 11, 0.9) 30%,
-      rgba(10, 9, 11, 0.72) 56%,
-      rgba(10, 9, 11, 0.68) 82%,
-      rgba(10, 9, 11, 0.76) 100%
-    ),
-    url('/golden-football-glory.webp');
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, cover;
-  background-position: center, right center;
-  /* Бесшовный вертикальный переход: сверху — из hero, снизу — в следующую секцию */
-  -webkit-mask: linear-gradient(180deg, transparent 0%, #000 13%, #000 85%, transparent 100%);
-  mask: linear-gradient(180deg, transparent 0%, #000 13%, #000 85%, transparent 100%);
+}
+/* Трофей-кубок — отдельный <img>, управляется из панели (размер, сдвиги, блики).
+   Привязан к правому краю и центру по вертикали; остальное задаёт :style. */
+.intro__trophy {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  height: auto;
+  will-change: transform, filter;
 }
 
 .intro__text,
 .stats { position: relative; z-index: 1; }
-.intro p { margin: 0 0 22px; font-size: 1.02rem; line-height: 1.7; color: rgba(255, 255, 255, 0.72); }
+.intro p { margin: 0 0 22px; font-size: 1.02rem; line-height: 1.7; color: rgba(255, 255, 255, 0.82); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 0.9); }
 .link-more {
   display: inline-flex;
   align-items: center;
@@ -565,14 +596,17 @@ function onImgUp() {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  /* читаемость поверх фото-фона */
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.9));
+  /* плотный тёмный контур — читаемость золотых цифр поверх яркого трофея */
+  filter:
+    drop-shadow(0 0 1px rgba(0, 0, 0, 1))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 1))
+    drop-shadow(0 2px 10px rgba(0, 0, 0, 0.95));
 }
 .stat span {
   margin-top: auto; /* подпись прижата к низу ячейки — ряды ровные */
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.72);
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.95);
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.86);
+  text-shadow: 0 0 3px rgba(0, 0, 0, 1), 0 1px 7px rgba(0, 0, 0, 0.98);
 }
 
 /* Лого в ячейках: выровнены по верху, подписи — по низу (.stat span) */
@@ -631,12 +665,12 @@ function onImgUp() {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10, 9, 11, 0.32) 0%, rgba(10, 9, 11, 0.55) 48%, rgba(10, 9, 11, 0.92) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.55) 48%, rgba(0, 0, 0, 0.92) 100%);
   transition: background 0.55s ease;
 }
 .play-card:hover .play-card__photo { opacity: 1; transform: scale(1); }
 .play-card:hover .play-card__photo::after {
-  background: linear-gradient(180deg, rgba(10, 9, 11, 0.15) 0%, rgba(10, 9, 11, 0.45) 52%, rgba(10, 9, 11, 0.9) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.45) 52%, rgba(0, 0, 0, 0.9) 100%);
 }
 
 .play-card__body {
@@ -733,7 +767,7 @@ function onImgUp() {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(11, 11, 12, 0.45) 0%, rgba(11, 11, 12, 0.3) 45%, rgba(11, 11, 12, 0.6) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.3) 45%, rgba(0, 0, 0, 0.6) 100%);
 }
 .rules-teaser__text { position: relative; z-index: 1; max-width: 640px; }
 .rules-teaser p { margin: 0 auto 30px; font-size: 1.05rem; line-height: 1.7; color: rgba(255, 255, 255, 0.82); }
@@ -790,7 +824,7 @@ function onImgUp() {
   border-radius: 20px;
   overflow: hidden;
   text-decoration: none;
-  background: #0b0b0c;
+  background: #000000;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 /* Фон — неоновый шлем справа, слева притемнён под текст */
@@ -804,7 +838,7 @@ function onImgUp() {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(10, 9, 11, 0.95) 0%, rgba(10, 9, 11, 0.78) 38%, rgba(10, 9, 11, 0.25) 70%, rgba(10, 9, 11, 0.15) 100%);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.78) 38%, rgba(0, 0, 0, 0.25) 70%, rgba(0, 0, 0, 0.15) 100%);
 }
 .event__body {
   position: relative;
@@ -903,15 +937,15 @@ function onImgUp() {
     transform: none !important;
     padding-top: clamp(56px, 9vh, 90px);
   }
-  /* Силуэт — мягкий фон за текстом на всю ширину */
-  /* На телефоне контент в один столбец — делаем затемнение равномернее, фото сверху-справа */
+  /* На телефоне контент в один столбец — трофей сверху-по центру, мягко приглушён */
   .intro__figure {
     background:
-      linear-gradient(180deg, rgba(10, 9, 11, 0.78) 0%, rgba(10, 9, 11, 0.7) 45%, rgba(10, 9, 11, 0.82) 100%),
-      url('/golden-football-glory.webp');
-    background-repeat: no-repeat, no-repeat;
-    background-size: cover, cover;
-    background-position: center, right center;
+      radial-gradient(60% 40% at 50% 22%, rgba(230, 200, 102, 0.16) 0%, transparent 70%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.86) 45%, rgba(0, 0, 0, 0.92) 100%),
+      url('/trophy-cup.webp');
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-size: cover, cover, 92% auto;
+    background-position: center, center, center top 6%;
     opacity: 1;
   }
   .stat b { font-size: 2.4rem; }

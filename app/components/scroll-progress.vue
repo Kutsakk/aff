@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
   width: 7px;
   height: min(72vh, 620px);
   border-radius: 999px;
-  background: rgba(12, 11, 13, 0.55);
+  background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(201, 168, 76, 0.18);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(10px);

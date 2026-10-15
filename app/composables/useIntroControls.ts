@@ -3,9 +3,10 @@
 // лого IFAF (размер + сдвиг) и сдвиг всего блока. Хранится в localStorage.
 
 export interface IntroControls {
-  figScale: number // масштаб силуэта (× к базовой ширине)
-  figX: number     // сдвиг силуэта по X, px
-  figY: number     // сдвиг силуэта по Y, px
+  figScale: number // масштаб трофея (× к базовой ширине)
+  figX: number     // сдвиг трофея по X, px
+  figY: number     // сдвиг трофея по Y, px
+  figBright: number // яркость/блики трофея (× brightness)
   bsbSize: number  // ширина лого Black Sea Bowl, px
   bsbX: number     // сдвиг лого BSB по X, px
   bsbY: number     // сдвиг лого BSB по Y, px
@@ -17,17 +18,19 @@ export interface IntroControls {
 }
 
 export const INTRO_DEFAULTS: IntroControls = {
-  figScale: 1.21,
-  figX: 11,
-  figY: -14,
-  bsbSize: 150,
-  bsbX: 0,
+  // Зафиксированная композиция из панели (?edit) — одинаково для всех посетителей
+  figScale: 1.03,
+  figX: -271,
+  figY: 0,
+  figBright: 0.57,
+  bsbSize: 140,
+  bsbX: 2,
   bsbY: 0,
   ifafSize: 117,
   ifafX: 0,
   ifafY: 21,
-  blockX: -82,
-  blockY: 37,
+  blockX: -8,
+  blockY: 99,
 }
 
 const STORAGE_KEY = 'aff-intro-controls'
@@ -60,10 +63,13 @@ export function useIntroControls() {
     save()
   }
 
-  // Готовые стили для привязки в шаблоне
+  // Готовые стили для привязки в шаблоне.
+  // Трофей: базовая ширина 560px × масштаб, привязан к правому краю и центру по вертикали,
+  // сдвиги figX/figY поверх, блики через filter brightness/saturate.
   const figureStyle = computed(() => ({
-    width: `min(92%, ${Math.round(760 * controls.value.figScale)}px)`,
-    transform: `translate(${controls.value.figX}px, ${controls.value.figY}px)`,
+    width: `min(96%, ${Math.round(560 * controls.value.figScale)}px)`,
+    transform: `translate(${controls.value.figX}px, calc(-50% + ${controls.value.figY}px))`,
+    filter: `brightness(${controls.value.figBright}) saturate(${(0.85 + controls.value.figBright * 0.2).toFixed(2)})`,
   }))
   const bsbStyle = computed(() => ({
     width: `${controls.value.bsbSize}px`,

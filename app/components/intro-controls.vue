@@ -27,18 +27,22 @@ const onRange = (key: keyof IntroControls, e: Event) =>
       </header>
 
       <section class="group">
-        <span class="group__title">Силуэт (фото)</span>
+        <span class="group__title">Трофей (стадион)</span>
         <label class="field">
           <span>Размер<b>{{ controls.figScale.toFixed(2) }}×</b></span>
-          <input type="range" min="0.5" max="2" step="0.01" :value="controls.figScale" @input="onRange('figScale', $event)">
+          <input type="range" min="0.4" max="2.4" step="0.01" :value="controls.figScale" @input="onRange('figScale', $event)">
         </label>
         <label class="field">
           <span>Сдвиг ↔<b>{{ controls.figX }}px</b></span>
-          <input type="range" min="-500" max="500" step="1" :value="controls.figX" @input="onRange('figX', $event)">
+          <input type="range" min="-800" max="400" step="1" :value="controls.figX" @input="onRange('figX', $event)">
         </label>
         <label class="field">
           <span>Сдвиг ↕<b>{{ controls.figY }}px</b></span>
           <input type="range" min="-400" max="400" step="1" :value="controls.figY" @input="onRange('figY', $event)">
+        </label>
+        <label class="field">
+          <span>Блики / яркость<b>{{ controls.figBright.toFixed(2) }}×</b></span>
+          <input type="range" min="0.5" max="1.8" step="0.01" :value="controls.figBright" @input="onRange('figBright', $event)">
         </label>
       </section>
 

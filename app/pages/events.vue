@@ -56,7 +56,7 @@ const meta = computed(() => [
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(11, 11, 12, 0.55) 0%, rgba(11, 11, 12, 0.42) 50%, rgba(11, 11, 12, 0.68) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.42) 50%, rgba(0, 0, 0, 0.68) 100%);
 }
 .ev {
   position: relative;
@@ -149,7 +149,7 @@ const meta = computed(() => [
   flex-direction: column;
   gap: 5px;
   padding: 16px 18px;
-  background: rgba(13, 12, 14, 0.4);
+  background: rgba(0, 0, 0, 0.4);
 }
 .ev__meta span { font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45); }
 .ev__meta b { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 1.05rem; color: #fff; }

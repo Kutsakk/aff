@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#0b0b0c] relative">
+  <div class="min-h-screen bg-[#000000] relative">
     <PageGlow />
     <SiteNavbar />
     <ScrollProgress />
