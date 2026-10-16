@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   fonts: {
     families: [
+      { name: 'Noto Serif Georgian', provider: 'google', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
       { name: 'Noto Sans Georgian', provider: 'google' },
       { name: 'Notable', provider: 'google' },
       { name: 'Graduate', provider: 'google' },

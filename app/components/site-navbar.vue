@@ -33,8 +33,21 @@ const isActive = (to: string) =>
 
 // Затемняющая подложка появляется при скролле — чтобы лого и текст не сливались
 const scrolled = ref(false)
-function onScroll() { scrolled.value = (window.scrollY || 0) > 24 }
+// Навбар прячется при скролле вниз и сразу возвращается при скролле вверх
+const hidden = ref(false)
+let lastY = 0
+function onScroll() {
+  const y = window.scrollY || 0
+  scrolled.value = y > 24
+  // Пока открыто мобильное меню — навбар не прячем
+  if (!open.value) {
+    if (y > lastY && y > 120) hidden.value = true       // вниз — скрываем
+    else if (y < lastY) hidden.value = false            // вверх — сразу показываем
+  }
+  lastY = y
+}
 onMounted(() => {
+  lastY = window.scrollY || 0
   onScroll()
   window.addEventListener('scroll', onScroll, { passive: true })
 })
@@ -42,7 +55,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 </script>
 
 <template>
-  <header class="nav-wrap" :class="{ scrolled }">
+  <header class="nav-wrap" :class="{ scrolled, hidden }">
     <!-- Лого — слева, отдельно от пилюли (как было) -->
     <NuxtLink to="/" class="brand" @click="open = false">
       <img src="/logoaff.webp" alt="AFF" class="brand-logo">
@@ -143,8 +156,18 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   justify-content: center;
   padding: 0 clamp(16px, 4vw, 44px);
   pointer-events: none;
+  transition: transform 0.38s ease, opacity 0.38s ease;
 }
 .nav-wrap > * { pointer-events: auto; position: relative; z-index: 1; }
+
+/* Скрытие навбара при скролле вниз (уезжает вверх и гаснет),
+   возврат при скролле вверх — мгновенно-плавный */
+.nav-wrap.hidden {
+  transform: translateY(-140%);
+  opacity: 0;
+  pointer-events: none;
+}
+.nav-wrap.hidden::before { opacity: 0; }
 
 /* Затемняющая подложка под навбаром — проявляется при скролле */
 .nav-wrap::before {

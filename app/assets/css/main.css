@@ -14,6 +14,18 @@ body {
   color: white;
 }
 
+/* Грузинская версия сайта — весь текст грузинским шрифтом Noto Serif Georgian.
+   Применяется только когда <html lang="ka">, поэтому ru/en не затрагиваются. */
+:lang(ka) {
+  font-family: 'Noto Serif Georgian', 'Noto Sans Georgian', sans-serif;
+}
+/* Заголовки задают свой дизайн-шрифт (Oswald и т.п.), из-за чего грузинские
+   глифы уходили в системный fallback. Для грузинской версии форсируем
+   Noto Serif Georgian на всех заголовках. */
+:lang(ka) :is(h1, h2, h3, h4) {
+  font-family: 'Noto Serif Georgian', 'Noto Sans Georgian', serif !important;
+}
+
 /* Прячем нативный скроллбар */
 html {
   scrollbar-width: none;        /* Firefox */

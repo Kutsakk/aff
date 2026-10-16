@@ -24,28 +24,56 @@ const galleryImages2012 = [
   { src: '/gallery-12.webp', alt: 'Клубы федерации' },
   { src: '/gallery-13.webp', alt: 'Матч чемпионата' },
   { src: '/gallery-14.webp', alt: 'Игроки на поле' },
+  { src: '/kutaisi-lions.jpg', alt: 'Kutaisi Lions — команда из Кутаиси' },
 ]
+// Галерея к сезону 2020
+const galleryImages2020 = [
+  { src: '/champ-2020-45.jpg', alt: 'Сезон 2020 — Rustavi Steelers' },
+  { src: '/champ-2020-46.jpg', alt: 'Сезон 2020 — матч чемпионата' },
+  { src: '/champ-2020-47.jpg', alt: 'Сезон 2020 — финал' },
+  { src: '/champ-2020-48.jpg', alt: 'Сезон 2020 — чемпионы Steelers' },
+]
+// Галерея к flag football / сборной
+const galleryImagesFlag = [
+  { src: '/flag-football-1.jpg', alt: 'Flag football — сборная Грузии' },
+  { src: '/flag-football-2.jpg', alt: 'Flag football — матч' },
+  { src: '/flag-football-3.jpg', alt: 'Flag football — команда' },
+  { src: '/flag-football-4.jpg', alt: 'Flag football — турнир' },
+]
+// Галерея к Black Sea Bowl (2025)
+const galleryImagesBSB = [
+  { src: '/black-sea-bowl-1.jpg', alt: 'Black Sea Bowl 2025 — турнир в Тбилиси' },
+  { src: '/black-sea-bowl-2.jpg', alt: 'Black Sea Bowl 2025 — матч' },
+  { src: '/black-sea-bowl-3.jpg', alt: 'Black Sea Bowl 2025 — сборная Грузии' },
+  { src: '/black-sea-bowl-4.jpg', alt: 'Black Sea Bowl 2025 — команды' },
+  { src: '/black-sea-bowl-5.jpg', alt: 'Black Sea Bowl 2025 — финал' },
+]
+// Галерея к первому чемпионату мира (2024)
+const galleryImages2024 = [
+  { src: '/flag-football-5.jpg', alt: 'Чемпионат мира 2024 — сборная Грузии' },
+  { src: '/flag-football-6.jpg', alt: 'Чемпионат мира 2024 — Финляндия' },
+  { src: '/flag-football-7.jpg', alt: 'Чемпионат мира 2024 — матч' },
+  { src: '/flag-football-8.jpg', alt: 'Чемпионат мира 2024 — команда' },
+]
+
+// Контент страницы на текущем языке (ka/ru/en)
+const c = useAboutContent()
+// Коды флагов стран Black Sea Bowl 2026 — порядок совпадает с c.bsb2026.countries
+const flagCodes = ['ge', 'ua', 'am', 'bg', 'pl', 'kz', 'cm', 'us']
+
+// Год-метка «как счёт на поле»: извлекаем год из начала заголовка (реактивно, без DOM-хаков)
+function yearOf(h: string): string | null {
+  const m = h.match(/^\s*(20\d\d(?:[–-]20\d\d)?)\s*—/)
+  return m ? m[1] : null
+}
+// Заголовок без год-префикса «2011 — » / «2012–2016 — » (разметка grad-gold сохраняется)
+function stripYear(h: string): string {
+  return yearOf(h) ? h.replace(/^[^—]*—\s*/, '') : h
+}
 
 onMounted(() => {
   // Начальное скрытие включаем только при живом JS — без него весь текст виден (SEO/fallback)
   document.documentElement.classList.add('about-reveal')
-
-  // Год-метки «как счёт на поле»: год из начала заголовка (или из data-year),
-  // крупной меткой; дублирующий год-префикс из самого заголовка убираем
-  document.querySelectorAll<HTMLElement>('.prose > section').forEach((sec) => {
-    const h2 = sec.querySelector('h2')
-    if (!h2) return
-    const text = h2.textContent ?? ''
-    const m = text.match(/^\s*(20\d\d)/)
-    const year = m?.[1] ?? sec.dataset.year
-    if (!year) return
-    if (m) h2.textContent = text.replace(/^[^—]*—\s*/, '') // убираем «2011 — » / «2012–2016 — »
-    const span = document.createElement('span')
-    span.className = 'yard-year'
-    span.textContent = year
-    span.setAttribute('aria-hidden', 'true')
-    sec.prepend(span)
-  })
 
   const els = document.querySelectorAll<HTMLElement>(
     '.about-hero, .prose > section, .prose > figure',
@@ -58,7 +86,7 @@ onMounted(() => {
         for (const e of entries)
           e.target.classList.toggle('in', e.isIntersecting)
       },
-      { threshold: 0, rootMargin: '-6% 0px -18% 0px' },
+      { threshold: 0, rootMargin: '-8% 0px -8% 0px' },
     )
     els.forEach(el => io.observe(el))
   }
@@ -79,6 +107,39 @@ onMounted(() => {
     onScroll()
     onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   }
+
+  // Лого-заставка (только мобилка): прозрачность и наезд ведёт прогресс прокрутки
+  // сквозь закреплённый блок — проявляется из черноты, держится, растворяется.
+  const stage = document.querySelector<HTMLElement>('.logo-stage')
+  const stagePin = stage?.querySelector<HTMLElement>('.logo-stage__pin') ?? null
+  const stageImg = stage?.querySelector<HTMLElement>('.logo-stage__img') ?? null
+  if (stage && stagePin && stageImg) {
+    const onStage = () => {
+      const rect = stage.getBoundingClientRect()
+      // Блок скрыт на десктопе (height 0) — ничего не делаем
+      if (rect.height < 1) return
+      const vh = window.innerHeight
+      const travel = rect.height - vh
+      if (travel <= 0) return
+      const t = Math.min(Math.max(-rect.top / travel, 0), 1) // 0..1 прогресс сквозь блок
+      // fade-in [0..0.32] → держится [0.32..0.68] → fade-out [0.68..1]
+      let o = 1
+      if (t < 0.32) o = t / 0.32
+      else if (t > 0.68) o = 1 - (t - 0.68) / 0.32
+      o = reduce ? 1 : Math.min(Math.max(o, 0), 1)
+      stagePin.style.opacity = String(o) // ореол гаснет вместе с лого
+      // медленный кино-наезд: лёгкое увеличение за весь проход
+      const sc = reduce ? 1 : 1 + t * 0.08
+      stageImg.style.transform = `scale(${sc.toFixed(3)})`
+    }
+    window.addEventListener('scroll', onStage, { passive: true })
+    window.addEventListener('resize', onStage, { passive: true })
+    onStage()
+    onBeforeUnmount(() => {
+      window.removeEventListener('scroll', onStage)
+      window.removeEventListener('resize', onStage)
+    })
+  }
 })
 </script>
 
@@ -87,51 +148,29 @@ onMounted(() => {
     <!-- Шапка раздела: текст выезжает слева, логотип — справа, встают рядом -->
     <header class="about-hero">
       <div class="about-hero__text">
-        <span class="kicker">О федерации</span>
-        <h1>История американского футбола в Грузии</h1>
-        <p class="lead">
-          Американский футбол в Грузии — это история не одного клуба и не одного поколения
-          игроков. Это история, которая началась с небольшого сообщества энтузиастов,
-          постепенно превратилась в национальную спортивную систему, пережила годы роста,
-          пандемию и кризис клубного футбола, а затем вышла на международную арену.
-        </p>
-        <p>
-          Сегодня грузинская сборная участвует в международных соревнованиях, в Тбилиси
-          приезжают команды из разных стран, а Грузия впервые в своей истории вошла в
-          официальный европейский цикл IFAF по tackle football. Но путь к этому занял более
-          пятнадцати лет.
-        </p>
+        <h1>{{ c.heroTitle }}</h1>
+        <p class="lead">{{ c.heroLead }}</p>
+        <p>{{ c.heroP2 }}</p>
       </div>
-      <img src="/logo-aff.webp" alt="American Football Federation of Georgia" class="about-hero__logo">
+      <figure class="about-hero__crest">
+        <img src="/logo-aff.webp" alt="American Football Federation of Georgia" class="about-hero__logo">
+      </figure>
     </header>
 
+    <!-- Только мобилка: лого-заставка. Лого закреплено по центру экрана (sticky)
+         и проявляется из черноты как логотип в начале фильма: fade-in → держится
+         → fade-out, с медленным наездом. Прозрачность ведёт скролл (JS). -->
+    <div class="logo-stage" aria-hidden="true">
+      <div class="logo-stage__pin">
+        <img src="/logo-aff.webp" alt="" class="logo-stage__img">
+      </div>
+    </div>
+
     <article class="prose">
-      <section data-year="2010">
-        <h2>Первые шаги: до создания федерации</h2>
-        <p>
-          Одни из первых документально подтверждённых свидетельств существования
-          американского футбола в Грузии относятся ещё к 2010 году.
-        </p>
-        <p>
-          4 декабря 2010 года в Тбилиси на искусственном поле Tavartkiladze Educational
-          Institution состоялся товарищеский матч по американскому футболу между
-          преподавателями английского языка и американскими морскими пехотинцами.
-        </p>
-        <p>
-          Это был ещё не национальный чемпионат и не полноценная грузинская лига, однако
-          этот матч показывает, что интерес к американскому футболу в Грузии существовал
-          ещё до создания национальной федерации.
-        </p>
-        <p>
-          Американские военнослужащие впоследствии продолжали участвовать в мероприятиях,
-          связанных с развитием этого вида спорта. В июне 2014 года на стадионе Merani в
-          Тбилиси, например, состоялся матч по flag football между американскими морскими
-          пехотинцами и грузинской командой.
-        </p>
-        <p>
-          Именно в этот период постепенно формировалась среда, из которой позже появилась
-          организованная грузинская система американского футбола.
-        </p>
+      <section>
+        <span class="yard-year" aria-hidden="true">2010</span>
+        <h2 v-html="c.s2010.h2" />
+        <p v-for="(p, i) in c.s2010.p" :key="i">{{ p }}</p>
       </section>
 
       <!-- Галерея раздела: coverflow-карусель (десктоп — перетаскивание,
@@ -141,34 +180,9 @@ onMounted(() => {
       </figure>
 
       <section>
-        <h2>2011 — создание Федерации американского футбола Грузии</h2>
-        <p>
-          Настоящей отправной точкой истории грузинского американского футбола можно
-          считать 2011 год.
-        </p>
-        <p>
-          В этом году была создана <strong>American Football Federation of Georgia</strong>.
-          Международная федерация IFAF указывает 2011 год как год основания грузинской
-          федерации.
-        </p>
-        <p>
-          На раннем этапе движение было совсем небольшим. По сохранившимся материалам, в
-          начале существовали всего две команды — <strong>Crusaders</strong> и
-          <strong>Grizzlies</strong>. Игроки и тренеры должны были получать
-          знания и опыт за пределами страны — в Европе и США.
-        </p>
-        <p>
-          Одной из центральных фигур этого периода был <strong>Амиран Кирия</strong>.
-          До возвращения в Грузию Кирия несколько лет играл в американский футбол в России.
-          Вернувшись на родину, он занялся развитием нового для Грузии вида спорта и стал
-          одним из главных людей у истоков федерации.
-        </p>
-        <p>
-          Перед молодой федерацией стояла огромная задача: фактически создать инфраструктуру
-          американского футбола практически с нуля — найти игроков, подготовить тренеров и
-          судей, сформировать команды и организовать соревнования. Так началась первая
-          организованная глава грузинского американского футбола.
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.s2011.h2) }}</span>
+        <h2 v-html="stripYear(c.s2011.h2)" />
+        <p v-for="(p, i) in c.s2011.p" :key="i" v-html="p" />
       </section>
 
       <figure class="gallery">
@@ -176,30 +190,9 @@ onMounted(() => {
       </figure>
 
       <section>
-        <h2>2012–2016 — первые соревнования и появление клубов</h2>
-        <p>
-          В первые годы после создания федерации американский футбол постепенно выходил за
-          рамки небольшой группы энтузиастов. Уже в 2012 году грузинские источники называют
-          проходившие соревнования <strong>первым чемпионатом Грузии</strong> по
-          американскому футболу.
-        </p>
-        <p>
-          Именно этот период сегодня труднее всего восстановить по архивам — сохранилось
-          значительно меньше таблиц, составов и результатов, чем по более поздним сезонам.
-          Поэтому его правильнее воспринимать как переходный этап: федерация уже существовала,
-          команды формировались, проводились национальные соревнования.
-        </p>
-        <p>
-          В это время начали появляться клубы, которые позднее станут важной частью истории
-          грузинской лиги. Одним из наиболее известных стал <strong>Tbilisi Crusaders</strong>,
-          основанный в 2013 году. Позже появились <strong>Rustavi Steelers</strong>,
-          <strong>AFC Tbilisi</strong> и <strong>Tbilisi Eagles</strong>.
-        </p>
-        <p>
-          Американский футбол постепенно начал выходить за пределы столицы. Команды и проекты
-          появлялись в Тбилиси, Кутаиси, Рустави, Мцхете, Зугдиди и других местах. Спорт
-          переставал быть исключительно тбилисским явлением.
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.s2012.h2) }}</span>
+        <h2 v-html="stripYear(c.s2012.h2)" />
+        <p v-for="(p, i) in c.s2012.p" :key="i" v-html="p" />
       </section>
 
       <figure class="gallery">
@@ -207,110 +200,101 @@ onMounted(() => {
       </figure>
 
       <section>
-        <h2>2017 — начало современной эры чемпионата</h2>
-        <p>
-          2017 год стал одним из главных переломных моментов. Именно с этого года начинается
-          современная история <strong>Georgian American Football League</strong>, для которой
-          сохранилось значительно больше статистики и результатов.
-        </p>
-        <p>
-          Первый сезон проходил с июня по октябрь 2017 года. В чемпионате участвовали
-          <strong>Tbilisi Crusaders, Rustavi Steelers, Kutaisi Lions и Mtskheta Iberia</strong>.
-          Лучшие команды выходили в плей-офф. Финал состоялся 1 октября 2017 года в Рустави.
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.s2017.h2) }}</span>
+        <h2 v-html="stripYear(c.s2017.h2)" />
+        <p v-html="c.s2017.p1" />
+        <p v-html="c.s2017.p2" />
 
-        <div class="match">
-          <span class="match__team">Tbilisi Crusaders</span>
+        <div class="match match--logos">
+          <span class="match__club">
+            <img src="/logo-crusaders.png" alt="Tbilisi Crusaders" class="match__logo">
+          </span>
           <span class="match__score">18 : 12</span>
-          <span class="match__team">Rustavi Steelers</span>
+          <span class="match__club">
+            <img src="/logo-rustavi.png" alt="Rustavi Steelers" class="match__logo">
+          </span>
         </div>
 
-        <p>
-          Победу одержали <strong>Tbilisi Crusaders</strong>, став первыми чемпионами
-          современной Georgian American Football League. Появилась регулярная национальная
-          лига, клубная система и официальный чемпион.
-        </p>
+        <p v-html="c.s2017.pWin" />
       </section>
 
-      <figure class="photo">
-        <span class="photo__tag">Фото</span>
-        <span class="photo__hint">2017 · первые чемпионы — Tbilisi Crusaders</span>
+      <figure class="photo photo--img">
+        <img src="/champ-2017.jpg" alt="2017 · первые чемпионы — Tbilisi Crusaders" loading="lazy">
       </figure>
 
       <section>
-        <h2>2018 — первое чемпионство Rustavi Steelers</h2>
-        <p>
-          В финале снова встретились <strong>Tbilisi Crusaders</strong> и
-          <strong>Rustavi Steelers</strong>. На этот раз победили Steelers.
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.s2018.h2) }}</span>
+        <h2 v-html="stripYear(c.s2018.h2)" />
+        <p v-html="c.s2018.p1" />
 
-        <div class="match">
-          <span class="match__team">Rustavi Steelers</span>
+        <div class="match match--logos">
+          <span class="match__club">
+            <img src="/logo-rustavi.png" alt="Rustavi Steelers" class="match__logo">
+          </span>
           <span class="match__score">24 : 18</span>
-          <span class="match__team">Tbilisi Crusaders</span>
+          <span class="match__club">
+            <img src="/logo-crusaders.png" alt="Tbilisi Crusaders" class="match__logo">
+          </span>
         </div>
 
-        <p>
-          Steelers завершили сезон без поражений и впервые стали чемпионами Грузии. Финал
-          получился драматичным: Crusaders вели 18:12 в четвёртой четверти, однако Steelers
-          заблокировали два панта подряд и набрали решающие очки. Так появилось первое
-          настоящее клубное соперничество — <strong>Crusaders против Steelers</strong>.
-        </p>
+        <p v-html="c.s2018.p2" />
       </section>
 
+      <figure class="photo photo--img">
+        <img src="/champ-2018.jpg" alt="2018 · первые чемпионы — Rustavi Steelers" loading="lazy">
+      </figure>
+
       <section>
-        <h2>2019 — расширение чемпионата</h2>
-        <p>
-          Если в 2018 году в чемпионате участвовали четыре команды, то в 2019 году их стало
-          шесть, а федерация рассчитывала довести число до восьми. Были представлены команды
-          из разных частей страны:
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.s2019.h2) }}</span>
+        <h2 v-html="stripYear(c.s2019.h2)" />
+        <p>{{ c.s2019.intro }}</p>
         <ul>
-          <li>Tbilisi Crusaders</li>
-          <li>Rustavi Steelers</li>
-          <li>AFC Tbilisi</li>
-          <li>Tbilisi Eagles</li>
-          <li>Sokhumi Warriors</li>
-          <li>Western Bad Boys (Зугдиди)</li>
+          <li v-for="(team, i) in c.s2019.teams" :key="i">{{ team }}</li>
         </ul>
 
-        <h3>Sokhumi Warriors</h3>
-        <p>
-          Особое место занимает команда <strong>Sokhumi Warriors</strong>. В 2019 году
-          федерация организовала товарищеский матч между Sokhumi Warriors и командой Tbilisi,
-          посвящённый 75-летию Жиули Шартавы. Позднее Warriors дошли до полуфинала, где
-          встретились с Crusaders.
-        </p>
+        <h3>{{ c.s2019.sokhumiH3 }}</h3>
+        <p v-html="c.s2019.sokhumiP" />
 
-        <div class="match">
-          <span class="match__team">Tbilisi Crusaders</span>
+        <div class="match match--logos">
+          <span class="match__club">
+            <img src="/logo-crusaders.png" alt="Tbilisi Crusaders" class="match__logo">
+          </span>
           <span class="match__score">37 : 8</span>
-          <span class="match__team">Sokhumi Warriors</span>
+          <span class="match__club match__club--plain">
+            <img src="/logo-sokhumi.png" alt="Sokhumi Warriors" class="match__logo">
+          </span>
         </div>
 
-        <p>
-          Сам факт существования команды из Сухуми был важен не только со спортивной точки
-          зрения. Американский футбол становился площадкой, через которую люди из разных
-          частей Грузии оставались частью общей спортивной среды.
-        </p>
+        <p>{{ c.s2019.sokhumiNote }}</p>
 
-        <h3>Western Bad Boys</h3>
-        <p>
-          В чемпионате также участвовала команда <strong>Western Bad Boys из Зугдиди</strong>.
-          Хотя её результаты были скромными, участие стало ещё одним свидетельством того, что
-          федерация развивала спорт не только в Тбилиси и Рустави, но и в регионах.
-        </p>
+        <figure class="photo photo--img">
+          <img src="/sokhumi-2019.jpg" alt="Sokhumi Warriors" loading="lazy">
+        </figure>
 
-        <h3>Steelers снова чемпионы</h3>
-        <p>Финал 2019 года вновь свёл главных соперников последних лет.</p>
+        <h3>{{ c.s2019.westernH3 }}</h3>
+        <p v-html="c.s2019.westernP" />
 
-        <div class="match">
-          <span class="match__team">Rustavi Steelers</span>
+        <figure class="team-crest">
+          <img src="/logo-westernbad.png" alt="Western Bad Boys" class="team-crest__img">
+        </figure>
+        <figure class="photo photo--img">
+          <img src="/zugdidi-2019.jpg" alt="Western Bad Boys — команда из Зугдиди" loading="lazy">
+        </figure>
+
+        <h3>{{ c.s2019.steelersH3 }}</h3>
+        <p>{{ c.s2019.steelersIntro }}</p>
+
+        <div class="match match--logos">
+          <span class="match__club">
+            <img src="/logo-rustavi.png" alt="Rustavi Steelers" class="match__logo">
+          </span>
           <span class="match__score">12 : 10</span>
-          <span class="match__team">Tbilisi Crusaders</span>
+          <span class="match__club">
+            <img src="/logo-crusaders.png" alt="Tbilisi Crusaders" class="match__logo">
+          </span>
         </div>
 
-        <p>Первые три современных сезона завершились так:</p>
+        <p>{{ c.s2019.champsLabel }}</p>
         <ul class="champs">
           <li><b>2017</b> — Tbilisi Crusaders</li>
           <li><b>2018</b> — Rustavi Steelers</li>
@@ -318,200 +302,159 @@ onMounted(() => {
         </ul>
       </section>
 
-      <figure class="photo">
-        <span class="photo__tag">Фото</span>
-        <span class="photo__hint">2019 · расширение лиги</span>
+      <figure class="photo photo--img">
+        <img src="/rustavi-champ-2019.jpg" alt="Rustavi Steelers — чемпионы 2019" loading="lazy">
       </figure>
 
       <section>
-        <h2>2020 — пандемия и третье чемпионство Steelers</h2>
-        <p>
-          Сезон 2020 года проходил в условиях пандемии COVID-19 и стартовал только в октябре.
-          Участвовали четыре команды: Rustavi Steelers, Tbilisi Crusaders, Tbilisi Eagles и
-          AFC Tbilisi (последний впоследствии снялся). Несмотря на сложные условия, сезон был
-          завершён. В регулярном чемпионате Steelers показали 5–1 и уверенно заняли первое место.
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.s2020.h2) }}</span>
+        <h2 v-html="stripYear(c.s2020.h2)" />
+        <p v-html="c.s2020.p1" />
 
-        <div class="match">
-          <span class="match__team">Rustavi Steelers</span>
+        <div class="match match--logos">
+          <span class="match__club">
+            <img src="/logo-rustavi.png" alt="Rustavi Steelers" class="match__logo">
+          </span>
           <span class="match__score">12 : 6</span>
-          <span class="match__team">Tbilisi Crusaders</span>
+          <span class="match__club">
+            <img src="/logo-crusaders.png" alt="Tbilisi Crusaders" class="match__logo">
+          </span>
         </div>
 
-        <p>
-          Steelers стали чемпионами Грузии третий раз подряд и к концу 2020 года были
-          доминирующей командой ранней современной эпохи.
-        </p>
+        <figure class="gallery">
+          <PhotoCarousel :images="galleryImages2020" />
+        </figure>
+
+        <p v-html="c.s2020.p2" />
       </section>
 
       <section>
-        <h2>2021 — перелом и кризис клубного футбола</h2>
-        <p>
-          Чемпионат 2021 года начался 5 июня. Но затем произошло то, чего раньше почти
-          невозможно было представить: 24 июля с турнира снялись <strong>Tbilisi Crusaders</strong>,
-          а 26 июля — <strong>Rustavi Steelers</strong>. Две команды, определявшие лицо
-          грузинского американского футбола первых четырёх сезонов, одновременно вышли из
-          чемпионата. Это стало серьёзным ударом по клубной системе.
-        </p>
-        <p>
-          Период 2017–2019 создавал ощущение постоянного роста: 4 команды → 6 команд → планы
-          на 8. Но пандемия и последующие проблемы показали, насколько трудно поддерживать
-          полноценный tackle football в небольшой спортивной экосистеме — он требует
-          экипировки, шлемов, защиты, большого количества игроков, тренеров, судей и
-          инфраструктуры.
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.s2021.h2) }}</span>
+        <h2 v-html="stripYear(c.s2021.h2)" />
+        <p v-html="c.s2021.p1" />
+        <p v-html="c.s2021.p2" />
       </section>
 
       <section>
-        <h2>Поворот к flag football</h2>
-        <p>
-          Одним из важнейших направлений стал <strong>flag football</strong> — бесконтактная
-          разновидность американского футбола. Здесь не требуется тяжёлая защитная экипировка,
-          а сам спорт значительно проще организовать. Для страны, где американский футбол ещё
-          развивается, это дало возможность быстрее создавать команды, проводить соревнования
-          и привлекать новых игроков. Постепенно именно flag football стал одним из главных
-          инструментов выхода Грузии на международную арену.
-        </p>
+        <h2 v-html="c.flag.h2" />
+        <p v-html="c.flag.p1" />
+        <p v-html="c.flag.p2" />
       </section>
 
-      <figure class="photo">
-        <span class="photo__tag">Фото</span>
-        <span class="photo__hint">Flag football · сборная</span>
+      <figure class="gallery">
+        <PhotoCarousel :images="galleryImagesFlag" />
       </figure>
 
       <section>
-        <h2>2024 — первый чемпионат мира</h2>
-        <p>
-          В 2024 году произошёл исторический шаг: сборная Грузии впервые приняла участие в
-          <strong>чемпионате мира по flag football</strong>. Турнир проходил в Финляндии в
-          августе 2024 года. И здесь снова появляется имя <strong>Амирана Кирии</strong> —
-          человека, который стоял у истоков федерации ещё в 2011 году, а спустя более десяти
-          лет представлял Грузию на мировом уровне. Это стало символом того, насколько далеко
-          продвинулся спорт с момента первых двух команд.
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.s2024.h2) }}</span>
+        <h2 v-html="stripYear(c.s2024.h2)" />
+        <p v-html="c.s2024.p1" />
+
+        <figure class="gallery">
+          <PhotoCarousel :images="galleryImages2024" />
+        </figure>
       </section>
 
       <section>
-        <h2>2025 — Black Sea Bowl</h2>
-        <p>
-          Грузия начала не только ездить на международные турниры, но и
-          <strong>принимать иностранные команды у себя</strong>. В Тбилиси состоялся первый
-          международный турнир <strong>Black Sea Bowl</strong>. Участвовали команды из
-          нескольких стран, а грузинская сборная дошла до финала.
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.bsb2025.h2) }}</span>
+        <h2 v-html="stripYear(c.bsb2025.h2)" />
+        <p v-html="c.bsb2025.p1" />
 
         <div class="match">
-          <span class="match__team">🇬🇪 Georgia</span>
+          <span class="match__team">
+            <img src="/flag-georgia.webp" alt="Грузия" class="match__flag">
+            Georgia
+          </span>
           <span class="match__score">28 : 27</span>
-          <span class="match__team">Poland 🇵🇱</span>
+          <span class="match__team">
+            Poland
+            <img src="/flag-poland.webp" alt="Польша" class="match__flag">
+          </span>
         </div>
 
-        <p>
-          Грузия выиграла турнир. Тбилиси начал превращаться в площадку для международных
-          соревнований.
-        </p>
+        <p>{{ c.bsb2025.p2 }}</p>
+
+        <figure class="gallery">
+          <PhotoCarousel :images="galleryImagesBSB" />
+        </figure>
       </section>
 
-      <figure class="photo photo--wide">
-        <span class="photo__tag">Фото</span>
-        <span class="photo__hint">Black Sea Bowl · Тбилиси</span>
-      </figure>
-
       <section>
-        <h2>2026 — Black Sea Bowl на новом уровне</h2>
-        <p>
-          В августе 2026 года в Тбилиси состоялся уже второй Black Sea Bowl. Турнир проходил
-          в Olympic Park и собрал команды из восьми стран:
-        </p>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.bsb2026.h2) }}</span>
+        <h2 v-html="stripYear(c.bsb2026.h2)" />
+        <p>{{ c.bsb2026.p1 }}</p>
         <ul class="flags">
-          <li>🇬🇪 Грузия</li>
-          <li>🇺🇦 Украина</li>
-          <li>🇦🇲 Армения</li>
-          <li>🇧🇬 Болгария</li>
-          <li>🇵🇱 Польша</li>
-          <li>🇰🇿 Казахстан</li>
-          <li>🇨🇲 Камерун</li>
-          <li>🇺🇸 США</li>
+          <li v-for="(country, i) in c.bsb2026.countries" :key="i">
+            <img :src="`/flags/${flagCodes[i]}.svg`" alt="" class="flag-ico"> {{ country }}
+          </li>
         </ul>
-        <p>
-          За несколько дней было запланировано около двадцати матчей — совершенно другой
-          масштаб по сравнению с первыми годами, когда в стране было всего несколько
-          энтузиастов и две команды.
-        </p>
+        <p>{{ c.bsb2026.p2 }}</p>
       </section>
 
       <section class="highlight">
-        <h2>2026 — исторический выход в международный tackle football</h2>
-        <p>
-          Главным событием современной истории стал другой шаг. В сентябре 2026 года IFAF
-          объявила состав европейского чемпионата. И впервые в истории
-          <strong>Грузия вошла в официальный европейский цикл IFAF по tackle football</strong> —
-          речь уже не о flag football, а о полноценном контактном американском футболе.
-        </p>
-        <p>Грузия заявлена в <strong>European Championship Level 2</strong> вместе с:</p>
-        <ul>
-          <li>🇪🇸 Испанией</li>
-          <li>🇬🇧 Great Britain Development Team</li>
+        <span class="yard-year" aria-hidden="true">{{ yearOf(c.tackle.h2) }}</span>
+        <h2 v-html="stripYear(c.tackle.h2)" />
+        <p v-html="c.tackle.p1" />
+        <p v-html="c.tackle.p2" />
+        <ul class="flags flags--lvl2">
+          <li v-for="(country, i) in c.tackle.lvl2" :key="i">
+            <img :src="`/flags/${['es', 'gb'][i]}.svg`" alt="" class="flag-ico"> {{ country }}
+          </li>
         </ul>
-        <p>Это официальный международный дебют Грузии в европейском цикле tackle football.</p>
+        <p>{{ c.tackle.p3 }}</p>
 
         <div class="fixtures">
           <div class="fixture">
-            <span class="fixture__date">11 октября 2026</span>
-            <span class="fixture__teams">🇬🇪 Georgia vs Great Britain Development Team</span>
-            <span class="fixture__place">Тбилиси</span>
+            <span class="fixture__date">{{ c.fixtures.date1 }}</span>
+            <span class="fixture__teams">{{ c.fixtures.teams1 }}</span>
+            <span class="fixture__place">{{ c.fixtures.place1 }}</span>
           </div>
           <div class="fixture">
-            <span class="fixture__date">24 октября 2026</span>
-            <span class="fixture__teams">🇪🇸 Spain vs Georgia 🇬🇪</span>
-            <span class="fixture__place">Испания</span>
+            <span class="fixture__date">{{ c.fixtures.date2 }}</span>
+            <span class="fixture__teams">{{ c.fixtures.teams2 }}</span>
+            <span class="fixture__place">{{ c.fixtures.place2 }}</span>
           </div>
         </div>
       </section>
 
       <section class="finale">
-        <h2>От двух команд до международной сборной</h2>
-        <p>
-          В 2010 году американский футбол в Тбилиси существовал преимущественно как небольшая
-          инициатива, связанная с американскими военнослужащими и отдельными энтузиастами. В
-          2011 году появилась федерация — и всего две команды. Игрокам и тренерам приходилось
-          учиться за границей.
-        </p>
-        <p>Затем появились первые грузинские клубы:</p>
+        <h2 v-html="c.finale.h2" />
+        <p v-html="c.finale.p1" />
+        <p>{{ c.finale.intro }}</p>
         <ul class="teams-grid">
-          <li>Tbilisi Crusaders</li>
-          <li>Rustavi Steelers</li>
-          <li>Kutaisi Lions</li>
-          <li>AFC Tbilisi</li>
-          <li>Tbilisi Eagles</li>
-          <li>Sokhumi Warriors</li>
-          <li>Western Bad Boys</li>
+          <li>
+            <span class="team-card__badge"><img src="/team-crusaders.jpg" alt="Tbilisi Crusaders"></span>
+            <span class="team-card__name">Tbilisi Crusaders</span>
+          </li>
+          <li>
+            <span class="team-card__badge"><img src="/team-rustavi.jpg" alt="Rustavi Steelers"></span>
+            <span class="team-card__name">Rustavi Steelers</span>
+          </li>
+          <li>
+            <span class="team-card__badge team-card__badge--fit"><img src="/team-kutaisi.png" alt="Kutaisi Lions"></span>
+            <span class="team-card__name">Kutaisi Lions</span>
+          </li>
+          <li>
+            <span class="team-card__badge"><img src="/team-afc.jpg" alt="AFC Tbilisi"></span>
+            <span class="team-card__name">AFC Tbilisi</span>
+          </li>
+          <li>
+            <span class="team-card__badge"><img src="/team-eagles.jpg" alt="Tbilisi Eagles"></span>
+            <span class="team-card__name">Tbilisi Eagles</span>
+          </li>
+          <li>
+            <span class="team-card__badge"><img src="/team-sokhumi.jpg" alt="Sokhumi Warriors"></span>
+            <span class="team-card__name">Sokhumi Warriors</span>
+          </li>
+          <li>
+            <span class="team-card__badge"><img src="/team-western.jpg" alt="Western Bad Boys"></span>
+            <span class="team-card__name">Western Bad Boys</span>
+          </li>
         </ul>
-        <p>
-          В 2017 году появилась современная национальная лига — первыми чемпионами стали
-          Crusaders, затем началась эпоха Rustavi Steelers с тремя титулами подряд. В 2019
-          чемпионат объединял команды из разных регионов. Потом пришла пандемия, и 2021 год
-          стал переломным. Но спорт не исчез — он изменил направление.
-        </p>
-        <p>
-          Flag football дал возможность привлечь новых игроков и вывести Грузию за пределы
-          внутреннего чемпионата. В 2024 году — первый чемпионат мира, в 2025 — первый
-          Black Sea Bowl и победа в нём, в 2026 — международный турнир с восемью странами и,
-          наконец, дебют в европейском tackle football.
-        </p>
-        <p>
-          От двух команд и нескольких энтузиастов до национальной сборной, международных
-          турниров и европейского чемпионата прошло примерно пятнадцать лет. И, пожалуй, самое
-          символичное во всей этой истории — имя <strong>Амирана Кирии</strong>: человек,
-          стоявший у истоков федерации в 2011 году, спустя годы оказался связан и с современной
-          сборной.
-        </p>
-        <p class="finale__path">
-          От первых игр в Тбилиси → к созданию федерации → первым клубам → национальному
-          чемпионату → эпохе Crusaders и Steelers → кризису после пандемии → развитию flag
-          football → мировому чемпионату → международным турнирам в Тбилиси → и, наконец,
-          дебюту Грузии в европейском tackle football в 2026 году.
-        </p>
+        <p v-html="c.finale.p2" />
+        <p v-html="c.finale.p3" />
+        <p v-html="c.finale.p4" />
+        <p class="finale__path">{{ c.finale.path }}</p>
       </section>
     </article>
   </main>
@@ -536,26 +479,51 @@ onMounted(() => {
   gap: clamp(20px, 4vw, 56px);
 }
 .about-hero__text { position: relative; }
-/* Логотип — яркий золотой объект справа, с мягким свечением */
+/* Герб федерации — самостоятельный знак с золотым ореолом (не иллюстрация к тексту) */
+.about-hero__crest {
+  position: relative;
+  margin: 0;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Ореол за эмблемой + вечное «дыхание» свечения */
+.about-hero__crest::before {
+  content: "";
+  position: absolute;
+  inset: -20% -14%;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 46%,
+    rgba(230, 200, 102, 0.34),
+    rgba(201, 168, 76, 0.12) 42%,
+    transparent 68%);
+  filter: blur(16px);
+  animation: crestBreath 6.5s ease-in-out infinite;
+  pointer-events: none;
+}
+/* Логотип — яркий золотой объект, с мягким свечением */
 .about-hero__logo {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   max-width: 380px;
   height: auto;
-  justify-self: end;
-  filter: brightness(1.12) drop-shadow(0 0 34px rgba(230, 200, 102, 0.3));
+  filter: brightness(1.12) drop-shadow(0 0 30px rgba(230, 200, 102, 0.28));
 }
-.kicker {
-  display: inline-block;
-  margin-bottom: 18px;
-  font-size: 0.78rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--color-gold-light, #e6c866);
+@keyframes crestBreath {
+  0%, 100% { opacity: 0.72; transform: scale(0.97); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
+
+/* ===== Мобильная «заставка»: лого эпично проявляется из чёрного при скролле.
+   На десктопе не нужна (там герб в шапке), поэтому скрыта. ===== */
+.logo-stage { display: none; }
 .about-hero h1 {
   margin: 0 0 24px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Oswald', 'Noto Serif Georgian', sans-serif;
   font-weight: 700;
   text-transform: uppercase;
   line-height: 1.04;
@@ -596,8 +564,8 @@ onMounted(() => {
 .about-reveal .prose > section,
 .about-reveal .prose > figure {
   transition:
-    opacity 1.4s ease,
-    transform 1.7s cubic-bezier(0.2, 0.75, 0.25, 1);
+    opacity 1s ease,
+    transform 1s cubic-bezier(0.2, 0.75, 0.25, 1);
   will-change: opacity, transform;
 }
 .about-hero.in .about-hero__text,
@@ -639,7 +607,7 @@ onMounted(() => {
 :deep(.yard-year) {
   display: block;
   margin-bottom: 4px;
-  font-family: 'Teko', 'Oswald', sans-serif;
+  font-family: 'Teko', 'Oswald', 'Noto Serif Georgian', sans-serif;
   font-weight: 700;
   font-size: clamp(2.4rem, 5.5vw, 3.8rem);
   line-height: 0.85;
@@ -655,7 +623,7 @@ onMounted(() => {
 :deep(.yard-year + h2)::before { display: none; }
 .prose h2 {
   margin: 0 0 18px;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Oswald', 'Noto Serif Georgian', sans-serif;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.01em;
@@ -671,11 +639,39 @@ onMounted(() => {
   border-radius: 999px;
   background: linear-gradient(90deg, var(--color-gold-light, #e6c866), transparent);
 }
+/* Подзаголовки глав — читаются как названия подразделов: капс, золотой градиент,
+   акцентная метка слева (отличается от h2, у которого черта сверху) */
 .prose h3 {
-  margin: 30px 0 12px;
-  font-size: 1.15rem;
+  position: relative;
+  width: fit-content;
+  margin: 40px 0 16px;
+  font-family: 'Oswald', 'Noto Serif Georgian', sans-serif;
   font-weight: 600;
-  color: var(--color-gold-light, #e6c866);
+  font-size: clamp(1.12rem, 2.4vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.12;
+  background: linear-gradient(90deg, #fff6d4 0%, #e6c866 55%, #c9a84c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* Золотистый градиентный акцент для отдельных слов в заголовках/тексте */
+.prose .grad-gold {
+  background: linear-gradient(90deg, #fff6d4 0%, #e6c866 55%, #c9a84c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* Красный акцент «Bowl» — в цвет логотипа Black Sea Bowl */
+.prose .bsb-red { color: #e21a2c; }
+/* Лого турнира рядом с заголовком */
+.prose h2 .h2-logo {
+  height: 2.2em;
+  width: auto;
+  vertical-align: middle;
+  margin-left: 0.5em;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
 }
 .prose p {
   margin: 0 0 16px;
@@ -694,20 +690,75 @@ onMounted(() => {
 .prose ul.champs li,
 .prose ul.flags li { padding: 4px 0; }
 .prose ul.champs b { color: var(--color-gold-light, #e6c866); margin-right: 8px; }
-.prose ul.flags { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px 20px; }
+.prose ul.flags {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 10px 48px;
+  width: fit-content;
+  margin: 18px auto 22px;
+  justify-content: center;
+}
+.prose ul.flags li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+.flag-ico {
+  flex-shrink: 0;
+  width: 34px;
+  height: 23px;
+  object-fit: cover;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
 .prose ul.teams-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-  margin: 10px 0 20px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  margin: 22px 0 26px;
 }
 .prose ul.teams-grid li {
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(201, 168, 76, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 6px;
+  background: none;
+  border: none;
   color: #fff;
   font-weight: 500;
+}
+.team-card__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 128px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.team-card__badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Лого, которое нельзя кадрировать (выходит за круг) — показываем целиком */
+.team-card__badge--fit {
+  overflow: visible;
+  border-radius: 0;
+}
+.team-card__badge--fit img {
+  object-fit: contain;
+}
+.team-card__name {
+  text-align: center;
+  font-family: 'Oswald', 'Noto Serif Georgian', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
 }
 
 /* ===== Результат матча ===== */
@@ -725,14 +776,76 @@ onMounted(() => {
   border: 1px solid rgba(201, 168, 76, 0.28);
 }
 .match__team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 600;
   color: #fff;
   font-size: 0.98rem;
 }
-.match__team:first-child { text-align: right; }
-.match__team:last-child { text-align: left; }
+.match__team:first-child { justify-content: flex-end; text-align: right; }
+.match__team:last-child { justify-content: flex-start; text-align: left; }
+.match__flag {
+  flex-shrink: 0;
+  width: 36px;
+  height: auto;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28), 0 2px 7px rgba(0, 0, 0, 0.45);
+}
+
+/* ===== Табло-счёт: два больших лого и крупный ярд-счёт между ними.
+   Без панели и без «кружков» — лого на прозрачном фоне, под ним мягкая белая
+   подложка (растворяется по краям), чтобы тёмные части лого читались. ===== */
+.match--logos {
+  background: none;
+  border: none;
+  padding: 0;
+  gap: clamp(12px, 3vw, 40px);
+  margin: 32px 0;
+}
+.match--logos .match__club {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.match--logos .match__club:first-child { justify-self: end; }
+.match--logos .match__club:last-child { justify-self: start; }
+/* Мягкая белая подложка под лого — без резких границ */
+.match--logos .match__club::before {
+  content: "";
+  position: absolute;
+  inset: -4%;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 52% 52% at 50% 50%,
+    rgba(255, 255, 255, 0.95) 42%,
+    rgba(255, 255, 255, 0.55) 62%,
+    transparent 80%);
+  filter: blur(5px);
+  pointer-events: none;
+}
+/* Лого, которому белая подложка не нужна (уже контрастное на тёмном) */
+.match__club--plain::before { display: none; }
+.match__logo {
+  position: relative;
+  z-index: 1;
+  width: clamp(120px, 30vw, 184px);
+  height: clamp(120px, 30vw, 184px);
+  object-fit: contain;
+}
+/* Счёт как цифры на табло в американском футболе — крупные градиентные, статичные */
+.match--logos .match__score {
+  font-family: 'Teko', 'Oswald', 'Noto Serif Georgian', sans-serif;
+  font-weight: 700;
+  font-size: clamp(3rem, 10vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.6));
+}
+
 .match__score {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Oswald', 'Noto Serif Georgian', sans-serif;
   font-weight: 700;
   font-size: 1.5rem;
   white-space: nowrap;
@@ -756,7 +869,7 @@ onMounted(() => {
   border-left: 3px solid var(--color-gold, #c9a84c);
 }
 .fixture__date {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Oswald', 'Noto Serif Georgian', sans-serif;
   font-weight: 600;
   color: var(--color-gold-light, #e6c866);
   letter-spacing: 0.04em;
@@ -782,6 +895,18 @@ onMounted(() => {
   font-weight: 500;
   color: #fff;
   line-height: 1.8;
+}
+
+/* Эмблема команды (без матча/счёта) — по центру, без подложки */
+.team-crest {
+  margin: 28px 0 10px;
+  display: flex;
+  justify-content: center;
+}
+.team-crest__img {
+  width: clamp(104px, 24vw, 148px);
+  height: auto;
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.6));
 }
 
 /* Галерея-карусель раздела */
@@ -834,7 +959,7 @@ onMounted(() => {
     linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, transparent 20%, transparent 78%, rgba(0, 0, 0, 0.6) 100%);
 }
 .photo__tag {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'Oswald', 'Noto Serif Georgian', sans-serif;
   font-size: 0.8rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
@@ -852,19 +977,58 @@ onMounted(() => {
     gap: 24px;
     text-align: left;
   }
-  .about-hero__logo {
-    order: -1; /* логотип сверху, как эмблема */
-    max-width: 220px;
-    justify-self: start;
-  }
+  /* На мобилке сначала идёт текст — герб из шапки убираем, лого покажем ниже
+     отдельной «заставкой» при скролле */
+  .about-hero__crest { display: none; }
   .about-reveal .about-hero__text,
-  .about-reveal .about-hero__logo,
   .about-reveal .prose > section,
   .about-reveal .prose > figure {
     transform: translateY(34px) scale(1);
   }
-  .prose::before { left: -14px; }
-  .prose section { padding-left: 2px; }
+  .prose::before { left: -4px; }
+  /* Отодвигаем текст и год-метки от оси-таймлайна, чтобы не липли к линии */
+  .prose section { padding-left: 24px; }
+
+  /* ===== Лого-заставка: закреплено по центру экрана, проявляется из черноты
+     как логотип в начале фильма (прозрачность и наезд ведёт JS по прокрутке) ===== */
+  .logo-stage {
+    display: block;
+    position: relative;
+    height: 200vh; /* запас прокрутки: fade-in → держится → fade-out */
+    margin: 10px 0;
+  }
+  .logo-stage__pin {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0; /* стартуем из черноты; значение ведёт JS */
+  }
+  /* Золотой ореол за лого */
+  .logo-stage__pin::before {
+    content: "";
+    position: absolute;
+    width: min(94vw, 460px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(230, 200, 102, 0.3),
+      rgba(201, 168, 76, 0.1) 44%,
+      transparent 68%);
+    filter: blur(22px);
+    pointer-events: none;
+  }
+  .logo-stage__img {
+    position: relative;
+    z-index: 1;
+    width: min(80vw, 360px);
+    height: auto;
+    transform-origin: center;
+    filter: brightness(1.12) drop-shadow(0 0 34px rgba(230, 200, 102, 0.35));
+    will-change: transform;
+  }
 }
 
 /* Уважаем системную настройку «меньше движения» — показываем сразу, без анимации */
@@ -875,14 +1039,23 @@ onMounted(() => {
   .about-reveal .prose > figure {
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
     transition: none !important;
   }
+  .about-hero__crest::before { animation: none; }
 }
 
 @media (max-width: 560px) {
   .match { grid-template-columns: 1fr; gap: 6px; text-align: center; }
   .match__team:first-child,
-  .match__team:last-child { text-align: center; }
+  .match__team:last-child { text-align: center; justify-content: center; }
+  /* Табло держим в ряд (лого — счёт — лого), два больших лого и счёт по центру */
+  .match--logos {
+    grid-template-columns: 1fr auto 1fr;
+    gap: clamp(2px, 1vw, 8px);
+  }
+  .match--logos .match__logo { width: clamp(92px, 27vw, 118px); height: clamp(92px, 27vw, 118px); }
+  .match--logos .match__score { font-size: clamp(2.4rem, 13vw, 3.2rem); }
   .prose ul.flags { grid-template-columns: 1fr; }
   .about-hero { padding: 28px 22px; }
 }

@@ -3,10 +3,10 @@
 // и горизонтальной прокруткой тачпада. Телефон: свайпы и тап. Клик по фото —
 // увеличение на весь экран (lightbox). Пагинация-точки снизу.
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { EffectCoverflow, Pagination, Mousewheel } from 'swiper/modules'
+import { EffectCoverflow, Mousewheel } from 'swiper/modules'
+import type { Swiper as SwiperClass } from 'swiper'
 import 'swiper/css'
 import 'swiper/css/effect-coverflow'
-import 'swiper/css/pagination'
 
 interface Slide { src: string, alt?: string }
 const props = withDefaults(defineProps<{
@@ -14,7 +14,30 @@ const props = withDefaults(defineProps<{
   loop?: boolean
 }>(), { loop: true })
 
-const modules = [EffectCoverflow, Pagination, Mousewheel]
+const modules = [EffectCoverflow, Mousewheel]
+
+// Swiper отключает loop, если слайдов мало (его предупреждение советует «make
+// duplicates»). Иначе у коротких галерей (4–5 фото) появляется пустота сбоку от
+// центрального кадра. Поэтому размножаем фото до достаточного числа — карусель
+// становится симметричной и бесконечной.
+const MIN_SLIDES = 8
+const displayImages = computed(() => {
+  const imgs = props.images
+  if (!props.loop || imgs.length === 0 || imgs.length >= MIN_SLIDES) return imgs
+  const times = Math.ceil(MIN_SLIDES / imgs.length)
+  return Array.from({ length: times }, () => imgs).flat()
+})
+
+// Своя пагинация: по одной точке на РЕАЛЬНОЕ фото (а не на размноженные слайды),
+// один ряд по центру. Встроенная Swiper-пагинация считала бы дубли и плодила точки.
+let swiperRef: SwiperClass | null = null
+const activeDot = ref(0)
+function syncDot(sw: SwiperClass) {
+  const n = props.images.length || 1
+  activeDot.value = ((sw.realIndex % n) + n) % n
+}
+function onSwiper(sw: SwiperClass) { swiperRef = sw; syncDot(sw) }
+function goTo(i: number) { swiperRef?.slideToLoop(i) }
 
 // Lightbox: увеличенное фото по клику
 const lightbox = ref<string | null>(null)
@@ -44,10 +67,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         :loop="props.loop"
         :coverflow-effect="{ rotate: 52, stretch: 0, depth: 220, modifier: 1.15, slideShadows: true }"
         :mousewheel="{ forceToAxis: true, sensitivity: 1 }"
-        :pagination="{ clickable: true }"
         class="pc__swiper"
+        @swiper="onSwiper"
+        @slide-change="syncDot"
       >
-        <SwiperSlide v-for="(img, i) in props.images" :key="i" class="pc__slide">
+        <SwiperSlide v-for="(img, i) in displayImages" :key="i" class="pc__slide">
           <img
             :src="img.src"
             :alt="img.alt || ''"
@@ -56,6 +80,18 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
           >
         </SwiperSlide>
       </Swiper>
+
+      <!-- Своя пагинация: по точке на реальное фото, один ряд по центру -->
+      <div v-if="props.images.length > 1" class="pc__dots">
+        <button
+          v-for="(img, i) in props.images"
+          :key="i"
+          class="pc__dot"
+          :class="{ on: i === activeDot }"
+          :aria-label="`Фото ${i + 1}`"
+          @click="goTo(i)"
+        />
+      </div>
 
       <!-- Фолбэк без JS/до гидрации: просто первое фото, чтобы не было пусто -->
       <template #fallback>
@@ -84,7 +120,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .pc__swiper {
   width: 100%;
   height: clamp(300px, 42vh, 440px);
-  padding-bottom: 46px !important;
 }
 .pc__slide {
   width: clamp(240px, 32vw, 360px);
@@ -109,13 +144,29 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .pc__fallback img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Точки пагинации — золотые под фирменный стиль */
-.pc :deep(.swiper-pagination-bullet) {
-  background: rgba(255, 255, 255, 0.4);
-  opacity: 1;
+/* Своя пагинация — один ряд золотых точек по центру */
+.pc__dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  margin-top: 18px;
 }
-.pc :deep(.swiper-pagination-bullet-active) {
+.pc__dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.pc__dot:hover { background: rgba(255, 255, 255, 0.6); }
+.pc__dot.on {
   background: var(--color-gold-light, #e6c866);
+  transform: scale(1.3);
+  box-shadow: 0 0 8px rgba(230, 200, 102, 0.6);
 }
 /* Золотая рамка активного слайда */
 .pc :deep(.swiper-slide-active) {
