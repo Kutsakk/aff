@@ -120,11 +120,11 @@ const ka: AboutContent = {
     h2: '2026 — ისტორიული გასვლა საერთაშორისო tackle football-ში',
     p1: 'თანამედროვე ისტორიის მთავარი მოვლენა სხვა ნაბიჯი გახდა. 2026 წლის სექტემბერში IFAF-მა გამოაცხადა ევროპული ჩემპიონატის შემადგენლობა. და ისტორიაში პირველად <strong>საქართველო შევიდა IFAF-ის ოფიციალურ ევროპულ tackle football ციკლში</strong> — საუბარია უკვე არა flag football-ზე, არამედ სრულფასოვან საკონტაქტო ამერიკულ ფეხბურთზე.',
     p2: 'საქართველო განაცხადშია <strong>European Championship Level 2</strong>-ში ერთად:',
-    lvl2: ['ესპანეთი', 'Great Britain Development Team'],
+    lvl2: ['ესპანეთი', 'დიდი ბრიტანეთი'],
     p3: 'ეს არის საქართველოს ოფიციალური საერთაშორისო დებიუტი ევროპულ tackle football ციკლში.',
   },
   fixtures: {
-    date1: '2026 წლის 11 ოქტომბერი', place1: 'თბილისი', teams1: 'Georgia vs Great Britain Development Team',
+    date1: '2026 წლის 11 ოქტომბერი', place1: 'თბილისი', teams1: 'Georgia vs Great Britain',
     date2: '2026 წლის 24 ოქტომბერი', place2: 'ესპანეთი', teams2: 'Spain vs Georgia',
   },
   finale: {
@@ -229,11 +229,11 @@ const ru: AboutContent = {
     h2: '2026 — исторический выход в международный tackle football',
     p1: 'Главным событием современной истории стал другой шаг. В сентябре 2026 года IFAF объявила состав европейского чемпионата. И впервые в истории <strong>Грузия вошла в официальный европейский цикл IFAF по tackle football</strong> — речь уже не о flag football, а о полноценном контактном американском футболе.',
     p2: 'Грузия заявлена в <strong>European Championship Level 2</strong> вместе с:',
-    lvl2: ['Испанией', 'Great Britain Development Team'],
+    lvl2: ['Испанией', 'Великобританией'],
     p3: 'Это официальный международный дебют Грузии в европейском цикле tackle football.',
   },
   fixtures: {
-    date1: '11 октября 2026', place1: 'Тбилиси', teams1: 'Georgia vs Great Britain Development Team',
+    date1: '11 октября 2026', place1: 'Тбилиси', teams1: 'Georgia vs Great Britain',
     date2: '24 октября 2026', place2: 'Испания', teams2: 'Spain vs Georgia',
   },
   finale: {
@@ -338,11 +338,11 @@ const en: AboutContent = {
     h2: '2026 — the historic entry into international tackle football',
     p1: 'The main event of modern history was a different step. In September 2026 IFAF announced the line-up of the European championship. And for the first time in history <strong>Georgia entered the official IFAF European tackle football cycle</strong> — this is no longer about flag football, but about full contact American football.',
     p2: 'Georgia is entered in <strong>European Championship Level 2</strong> together with:',
-    lvl2: ['Spain', 'Great Britain Development Team'],
+    lvl2: ['Spain', 'Great Britain'],
     p3: "This is Georgia's official international debut in the European tackle football cycle.",
   },
   fixtures: {
-    date1: '11 October 2026', place1: 'Tbilisi', teams1: 'Georgia vs Great Britain Development Team',
+    date1: '11 October 2026', place1: 'Tbilisi', teams1: 'Georgia vs Great Britain',
     date2: '24 October 2026', place2: 'Spain', teams2: 'Spain vs Georgia',
   },
   finale: {

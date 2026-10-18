@@ -440,6 +440,10 @@ function onImgUp() {
   letter-spacing: 0.015em;
   font-size: clamp(2.1rem, 5.6vw, 5rem);
 }
+/* Герой-заголовок всегда латиницей (Goldman) — на всех языках одинаково.
+   Перебиваем глобальный :lang(ka) h1 → Noto Serif Georgian из main.css */
+:lang(ka) .hero-title,
+:lang(ka) .hero-title span { font-family: 'Goldman', sans-serif !important; }
 
 /* Режим редактирования: надпись можно схватить и перетащить мышью/пальцем */
 .hero-title.is-edit {
@@ -473,11 +477,21 @@ function onImgUp() {
 /* ===== Слоган hero: единый бело-золотой перелив, один шрифт для всех языков ===== */
 .hero-tag {
   margin: clamp(26px, 4.4vh, 48px) 0 0;
-  font-family: 'Manrope', 'Noto Sans Georgian', sans-serif;
+  /* Латиница ru/en — Oswald (как заголовки сайта); грузинские глифы
+     падают в Noto Serif Georgian, как заголовки в «О нас» */
+  font-family: 'Oswald', 'Noto Serif Georgian', sans-serif;
   font-weight: 600;
   font-size: clamp(1.18rem, 1.85vw, 1.8rem);
   line-height: 1.3;
-  letter-spacing: 0.005em;
+  /* Лёгкий капс + разрядка: на груз. унокамерный текст не влияет,
+     латиницу делает «плакатной» */
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  /* .hero-content сквозной (pointer-events:none) — слогану возвращаем
+     события, чтобы текст можно было выделять и копировать */
+  pointer-events: auto;
+  -webkit-user-select: text;
+  user-select: text;
 }
 .hero-tag__line { display: block; }
 /* Вторая строка — лёгкой ступенькой */

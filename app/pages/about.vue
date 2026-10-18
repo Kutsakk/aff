@@ -656,17 +656,18 @@ onMounted(() => {
   background-clip: text;
   color: transparent;
 }
-/* Золотистый градиентный акцент для отдельных слов в заголовках/тексте */
-.prose .grad-gold {
+/* Золотистый градиентный акцент для отдельных слов в заголовках/тексте.
+   :deep — слова приходят из v-html и не несут scoped-атрибута компонента */
+.prose :deep(.grad-gold) {
   background: linear-gradient(90deg, #fff6d4 0%, #e6c866 55%, #c9a84c 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 /* Красный акцент «Bowl» — в цвет логотипа Black Sea Bowl */
-.prose .bsb-red { color: #e21a2c; }
+.prose :deep(.bsb-red) { color: #e21a2c; }
 /* Лого турнира рядом с заголовком */
-.prose h2 .h2-logo {
+.prose h2 :deep(.h2-logo) {
   height: 2.2em;
   width: auto;
   vertical-align: middle;
@@ -678,7 +679,8 @@ onMounted(() => {
   font-size: 1rem;
   line-height: 1.72;
 }
-.prose strong { color: #fff; font-weight: 600; }
+/* strong тоже приходит из v-html — нужен :deep */
+.prose :deep(strong) { color: #fff; font-weight: 600; }
 .prose ul {
   margin: 0 0 18px;
   padding-left: 22px;
