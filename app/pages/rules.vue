@@ -1297,10 +1297,9 @@ const penalties = computed(() => r.value.penalties)
   .downs-media { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; align-items: center; justify-items: center; }
   .downs-photo { max-width: 100%; }
   .downs-gear img { max-width: 100%; }
-  .downs { gap: 8px; margin-top: 18px; }
-  .down { min-width: 64px; padding: 11px; }
-  .down__n { font-size: 1.5rem; }
-  .down--goal { flex-basis: 100%; }
+  /* На мобиле плитки-цифры (1–4 и 10) убираем — суть объяснена текстом выше;
+     оставляем только фото (судья с маркером + индикаторы) */
+  .downs { display: none; }
 
   /* Поле */
   .field-media { margin-top: 16px; }
