@@ -177,6 +177,10 @@ onMounted(() => {
 
 <template>
   <main class="about">
+    <!-- Фон-слой страницы: тёмная золото-чёрная текстура (волна + полутона),
+         фиксирована от вьюпорта, с затемнением для читаемости текста. -->
+    <div class="about-bg" aria-hidden="true" />
+
     <!-- Кино-интро: лого под чёрными кино-полосами + «scroll»; по скроллу
          раскрывается, увеличивается и растворяется. Один раз за сессию (JS). -->
     <div class="cine" aria-hidden="true">
@@ -500,12 +504,30 @@ onMounted(() => {
 <style scoped>
 .about {
   position: relative;
+  isolation: isolate; /* свой stacking-контекст: фон-слой под контентом */
   color: rgba(255, 255, 255, 0.82);
   /* верхний отступ перенесён в .about-hero — чтобы кино-интро начиналось от
      самого верха; боковой/нижний остаются */
   padding: 0 clamp(20px, 6vw, 48px) 120px;
   background: transparent;
 }
+
+/* Фон-слой: реальный фиксированный элемент (не background-attachment: fixed —
+   он глючит на iOS). cover считается от вьюпорта; затемнение поверх текстуры,
+   чтобы золотые заголовки и текст читались. z-index: 0 — под контентом (1),
+   под кино-интро (.cine z-index: 2). */
+.about-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.42)),
+    url('/about-bg.webp') center center / cover no-repeat;
+}
+/* Весь контент раздела — над фон-слоём */
+.about-hero,
+.prose { position: relative; z-index: 1; }
 
 /* ===== Шапка раздела: заголовок + вводный текст на фоне грузинского флага ===== */
 .about-hero {
@@ -1094,6 +1116,19 @@ onMounted(() => {
 
 /* На телефоне зигзаг схлопывается: всё всплывает СНИЗУ (без боковых выездов) */
 @media (max-width: 760px) {
+  /* На узком экране широкая картинка обрезается до центральной полосы и
+     композиция теряется — подаём отдельную вертикальную версию (поворот),
+     чтобы золотая волна читалась целиком. */
+  .about-bg {
+    background:
+      /* притушить центр (где текст), оставив бока с золотой линией яркими */
+      radial-gradient(72% 58% at 50% 48%,
+        rgba(0, 0, 0, 0.62) 0%,
+        rgba(0, 0, 0, 0.3) 52%,
+        rgba(0, 0, 0, 0) 84%),
+      linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.28)),
+      url('/about-bg-v.webp') center center / cover no-repeat;
+  }
   .about-hero {
     grid-template-columns: 1fr;
     gap: 24px;

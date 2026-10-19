@@ -194,6 +194,28 @@ function onImgUp() {
           width="188px"
           face-gradient="linear-gradient(145deg, #6b4e1b 0%, #2a1f0b 42%, #000000 100%)"
         />
+        <!-- Подсказка «листай вниз» — только на телефоне (вместо «Правил»).
+             Без плашки: слово SCROLL + наэлектризованная стрелка (SVG-фильтр
+             с турбулентным искажением краёв даёт эффект электрического разряда). -->
+        <div class="scroll-hint" aria-hidden="true">
+          <span>Scroll</span>
+          <svg class="scroll-arrow" viewBox="0 0 44 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="scrollElectric" x="-80%" y="-80%" width="260%" height="260%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.02 0.06" numOctaves="2" seed="3" result="noise">
+                  <animate attributeName="seed" values="1;7;3;9;2;6;1" dur="0.45s" repeatCount="indefinite" />
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" result="disp" />
+                <feGaussianBlur in="disp" stdDeviation="1.3" result="glow" />
+                <feMerge>
+                  <feMergeNode in="glow" />
+                  <feMergeNode in="disp" />
+                </feMerge>
+              </filter>
+            </defs>
+            <path d="M6 9 L22 22 L38 9" stroke="#ffe9a8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#scrollElectric)" />
+          </svg>
+        </div>
       </div>
     </div>
 
@@ -234,11 +256,16 @@ function onImgUp() {
       </div>
     </div>
 
-    <!-- «Наша история» — по центру под логотипами, с бегущим золотым бордером -->
-    <NuxtLink to="/about" class="history-btn">
-      <span>{{ t.home.introLink }}</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-    </NuxtLink>
+    <!-- «Наша история» — по центру под логотипами; металлическая кнопка
+         (тот же визуал, что у «Правила» в hero) -->
+    <div class="history-cta">
+      <MetallicButton
+        :label="t.home.introLink"
+        to="/about"
+        width="230px"
+        face-gradient="linear-gradient(145deg, #6b4e1b 0%, #2a1f0b 42%, #000000 100%)"
+      />
+    </div>
   </section>
 
   <!-- Начать играть -->
@@ -525,6 +552,50 @@ function onImgUp() {
    видимый левый край правее контейнера. Сдвигаем влево, чтобы край совпал с
    кнопкой «Правила» под ней (ровно друг под другом). */
 .hero-actions :deep(.eb) { margin-left: -18px; }
+
+/* Подсказка «Scroll ↓» — по умолчанию скрыта (только телефон, см. медиа ниже).
+   Без плашки: слово SCROLL + наэлектризованная золотая стрелка. */
+.scroll-hint {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+.scroll-hint span {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  text-transform: uppercase;
+  color: #fff6e0;
+  text-shadow: 0 0 14px rgba(230, 200, 102, 0.7), 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+/* Наэлектризованная стрелка: искажение даёт SVG-фильтр, свечение и мерцание — CSS */
+.scroll-arrow {
+  width: 38px;
+  height: 26px;
+  overflow: visible;
+  filter:
+    drop-shadow(0 0 5px rgba(255, 214, 110, 0.85))
+    drop-shadow(0 0 13px rgba(230, 200, 102, 0.55));
+  animation: arrowBob 1.7s ease-in-out infinite, arrowFlicker 2.4s steps(1, end) infinite;
+}
+@keyframes arrowBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+/* Нервное электрическое мерцание яркости */
+@keyframes arrowFlicker {
+  0%, 100% { opacity: 1; }
+  42% { opacity: 1; }
+  47% { opacity: 0.68; }
+  52% { opacity: 1; }
+  68% { opacity: 0.85; }
+  73% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .scroll-arrow { animation: none; } }
+
 .hero-btn {
   display: inline-flex;
   align-items: center;
@@ -663,48 +734,14 @@ function onImgUp() {
 
 /* «Наша история» — отдельная центрированная кнопка под цифрами/лого.
    Бегущий золотой бордер-комета (как на карточках) + стеклянный фон. */
-.history-btn {
+/* «Наша история» — обёртка центрирует металлическую кнопку под логотипами */
+.history-cta {
   grid-column: 1 / -1;
   justify-self: center;
   margin-top: clamp(22px, 4vh, 40px);
   position: relative;
   z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 13px 34px;
-  border-radius: 999px;
-  font-family: 'Oswald', sans-serif;
-  font-weight: 600;
-  font-size: 0.98rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-gold-light, #e6c866);
-  text-decoration: none;
-  background: rgba(0, 0, 0, 0.55);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-  box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(201, 168, 76, 0.25);
-  transition: color 0.25s ease, background 0.25s ease, transform 0.2s ease;
 }
-.history-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.6px;
-  pointer-events: none;
-  background: conic-gradient(from var(--beam-angle), transparent 0%, #9a7a2e 7%, #e6c866 11%, #fff6d6 13%, #e6c866 15%, transparent 24%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  animation: beamSpin 4s linear infinite;
-}
-.history-btn svg { width: 16px; height: 16px; transition: transform 0.2s ease; }
-.history-btn:hover { color: #fff; background: rgba(201, 168, 76, 0.14); transform: translateY(-2px); }
-.history-btn:hover svg { transform: translateX(3px); }
-@media (prefers-reduced-motion: reduce) { .history-btn::before { animation: none; } }
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1151,6 +1188,9 @@ function onImgUp() {
   .hero-actions { align-items: center; }
   /* на мобильном кнопки центрированы — внутренний отступ симметричен, сдвиг не нужен */
   .hero-actions :deep(.eb) { margin-left: 0; }
+  /* На телефоне убираем «Правила», вместо неё — подсказка «Scroll ↓» */
+  .hero-actions :deep(.mbtn) { display: none; }
+  .scroll-hint { display: inline-flex; }
   .intro {
     grid-template-columns: 1fr;
     transform: none !important;
