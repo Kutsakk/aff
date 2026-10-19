@@ -187,10 +187,7 @@ function onImgUp() {
       </p>
 
       <div class="hero-actions">
-        <NuxtLink to="/play" class="hero-btn hero-btn--gold">
-          {{ t.nav.play }}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </NuxtLink>
+        <ElectricButton :label="t.nav.play" to="/play" />
         <MetallicButton
           :label="t.nav.rules"
           to="/rules"
@@ -251,24 +248,25 @@ function onImgUp() {
       <h2>{{ t.home.joinH2 }}</h2>
       <p>{{ t.home.joinP }}</p>
     </header>
-    <div class="play-cards">
-      <NuxtLink to="/play" class="play-card play-card--kids">
+    <div class="play-cards play-cards--2">
+      <NuxtLink to="/play?format=flag" class="play-card play-card--flag play-card--priority">
         <div class="play-card__photo" aria-hidden="true" />
         <div class="play-card__body">
-          <h3>{{ t.home.flagTitle }}</h3>
-          <p>{{ t.home.flagDesc }}</p>
-          <span class="play-card__go">{{ t.home.flagCta }} →</span>
+          <span class="play-card__tag">★ {{ t.home.priorityTag }}</span>
+          <h3>{{ t.home.pathFlagTitle }}</h3>
+          <p>{{ t.home.pathFlagDesc }}</p>
+          <span class="play-card__go">{{ t.home.pathGo }} →</span>
         </div>
         <span class="beam" aria-hidden="true" />
       </NuxtLink>
-      <NuxtLink to="/play" class="play-card play-card--teens">
+      <NuxtLink to="/play?format=tackle" class="play-card play-card--tackle">
         <div class="play-card__photo" aria-hidden="true" />
         <div class="play-card__body">
-          <h3>{{ t.home.tackleTitle }}</h3>
-          <p>{{ t.home.tackleDesc }}</p>
-          <span class="play-card__go">{{ t.home.tackleCta }} →</span>
+          <h3>{{ t.home.pathTackleTitle }}</h3>
+          <p>{{ t.home.pathTackleDesc }}</p>
+          <span class="play-card__go">{{ t.home.pathGo }} →</span>
         </div>
-        <span class="beam beam--delay" aria-hidden="true" />
+        <span class="beam beam--neon2" aria-hidden="true" />
       </NuxtLink>
     </div>
   </section>
@@ -304,6 +302,15 @@ function onImgUp() {
         <span class="beam beam--neon" aria-hidden="true" />
       </NuxtLink>
     </div>
+  </section>
+
+  <!-- Спонсоры и партнёры — бегущая лента светлых чипов -->
+  <section class="sponsors">
+    <header class="band__head">
+      <span class="eyebrow">{{ t.home.sponsorsEyebrow }}</span>
+      <h2>{{ t.home.sponsorsH2 }}</h2>
+    </header>
+    <SponsorsMarquee />
   </section>
   </div>
 </template>
@@ -514,6 +521,10 @@ function onImgUp() {
   margin-top: clamp(36px, 5.6vh, 64px);
   pointer-events: auto; /* hero-content сквозной для перетаскивания — кнопки возвращаем в клик */
 }
+/* Электро-кнопка рисует плашку с внутренним отступом внутри canvas, поэтому её
+   видимый левый край правее контейнера. Сдвигаем влево, чтобы край совпал с
+   кнопкой «Правила» под ней (ровно друг под другом). */
+.hero-actions :deep(.eb) { margin-left: -18px; }
 .hero-btn {
   display: inline-flex;
   align-items: center;
@@ -775,8 +786,37 @@ function onImgUp() {
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
-.play-card--kids { background: radial-gradient(130% 90% at 0% 0%, rgba(201, 168, 76, 0.14), transparent 55%), rgba(255, 255, 255, 0.02); border-color: rgba(201, 168, 76, 0.3); }
+.play-card--kids,
+.play-card--flag { background: radial-gradient(130% 90% at 0% 0%, rgba(201, 168, 76, 0.14), transparent 55%), rgba(255, 255, 255, 0.02); border-color: rgba(201, 168, 76, 0.3); }
+.play-card--students { background: radial-gradient(130% 90% at 0% 0%, rgba(67, 185, 166, 0.16), transparent 55%), rgba(255, 255, 255, 0.02); border-color: rgba(67, 185, 166, 0.32); }
+.play-card--clubs,
+.play-card--tackle { background: radial-gradient(130% 90% at 0% 0%, rgba(58, 144, 200, 0.16), transparent 55%), rgba(255, 255, 255, 0.02); border-color: rgba(58, 144, 200, 0.32); }
 .play-card--teens { background: radial-gradient(130% 90% at 0% 0%, rgba(58, 144, 200, 0.16), transparent 55%), rgba(255, 255, 255, 0.02); border-color: rgba(58, 144, 200, 0.32); }
+/* Приоритеты развития — золотая рамка-акцент */
+.play-card--priority { border-color: rgba(201, 168, 76, 0.5); }
+/* Бейдж «Приоритет 2026» */
+.play-card__tag {
+  align-self: flex-start;
+  margin-bottom: 4px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1a1206;
+  background: linear-gradient(145deg, #e6c866, #c9a84c);
+  box-shadow: 0 4px 12px -4px rgba(201, 168, 76, 0.7);
+}
+/* Три пути — чуть уже минимальная карточка, чтобы встали в ряд на десктопе */
+.play-cards--3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+/* Два формата — две равные карточки по центру, без растяжки на всю ширину */
+.play-cards--2 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  max-width: 860px;
+  margin-inline: auto;
+}
 .play-card:hover { transform: translateY(-5px); box-shadow: 0 26px 60px -26px rgba(0, 0, 0, 0.85); }
 
 /* Фото: приглушённый атмосферный фон по умолчанию, яркое при наведении */
@@ -791,7 +831,11 @@ function onImgUp() {
   transform: scale(1.04);
   transition: opacity 0.55s ease, transform 0.7s ease;
 }
-.play-card--kids .play-card__photo { background-image: url('/flafball.webp'); }
+.play-card--kids .play-card__photo,
+.play-card--flag .play-card__photo { background-image: url('/flafball.webp'); }
+.play-card--students .play-card__photo { background-image: url('/flag-football-5.jpg'); }
+.play-card--clubs .play-card__photo,
+.play-card--tackle .play-card__photo { background-image: url('/helmet-bench.webp'); }
 .play-card--teens .play-card__photo { background-image: url('/helmet-bench.webp'); }
 /* Затемнение для читаемости текста; по умолчанию плотнее снизу, на hover мягче */
 .play-card__photo::after {
@@ -817,7 +861,11 @@ function onImgUp() {
 .play-card p { margin: 0; font-size: 0.95rem; line-height: 1.55; color: rgba(255, 255, 255, 0.72); }
 .play-card__go { margin-top: 8px; font-weight: 600; font-size: 0.95rem; }
 .play-card--kids .play-card__go,
-.play-card--teens .play-card__go { color: var(--color-gold-light, #e6c866); }
+.play-card--flag .play-card__go { color: var(--color-gold-light, #e6c866); }
+.play-card--students .play-card__go { color: #5fd8c2; }
+.play-card--clubs .play-card__go,
+.play-card--tackle .play-card__go,
+.play-card--teens .play-card__go { color: #7fc0f0; }
 
 /* Border-beam: золотая комета бежит по рамке (конический градиент + XOR-маска) */
 @property --beam-angle {
@@ -1044,6 +1092,14 @@ function onImgUp() {
 .event__cta { margin-top: 6px; font-weight: 600; color: var(--color-gold-light, #e6c866); }
 @media (prefers-reduced-motion: reduce) { .event__live i { animation: none; } }
 
+/* ===== Спонсоры и партнёры ===== */
+.sponsors {
+  position: relative;
+  /* без боковых отступов: лента уходит за край экрана (full-bleed) */
+  padding: clamp(30px, 5vh, 70px) 0 clamp(70px, 10vh, 120px);
+}
+.sponsors .band__head { margin-bottom: clamp(28px, 4vh, 44px); padding: 0 20px; }
+
 @media (max-width: 900px) {
   /* Мобильный hero: не absolute-наложение на весь экран, а чистая колонка —
      заголовок сверху, фото ниже. Так нет пустого чёрного поля и текст не
@@ -1093,6 +1149,8 @@ function onImgUp() {
   .hero-tag { font-size: clamp(1.2rem, 5.2vw, 1.75rem); text-align: center; }
   .hero-tag__line--2 { margin-left: 0; } /* на мобильном без ступеньки — по центру */
   .hero-actions { align-items: center; }
+  /* на мобильном кнопки центрированы — внутренний отступ симметричен, сдвиг не нужен */
+  .hero-actions :deep(.eb) { margin-left: 0; }
   .intro {
     grid-template-columns: 1fr;
     transform: none !important;

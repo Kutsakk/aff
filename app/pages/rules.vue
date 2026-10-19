@@ -121,37 +121,27 @@ onMounted(() => {
   })
 })
 
-// Плавное появление текста и картинок при скролле (включаем только при живом JS —
-// без него весь контент виден сразу, для SEO/fallback)
+// Плавное появление текста и картинок при скролле — в обе стороны (как на /about):
+// элемент проявляется при входе в экран и прячется обратно при выходе, поэтому
+// анимация отыгрывает и вниз, и вверх. Включаем только при живом JS — без него
+// весь контент виден сразу (SEO/fallback).
 onMounted(() => {
   document.documentElement.classList.add('rules-reveal')
   const els = Array.from(document.querySelectorAll<HTMLElement>('.reveal'))
-  // Проверка по положению при скролле — надёжнее IntersectionObserver в
-  // нестандартных контекстах (iframe-превью, масштабированные рамки), где IO
-  // может не срабатывать и фото оставались невидимыми.
-  let pending = els.slice()
-  let ticking = false
-  const reveal = () => {
-    ticking = false
-    const vh = window.innerHeight || document.documentElement.clientHeight
-    pending = pending.filter((el) => {
-      const r = el.getBoundingClientRect()
-      // появился, как только верх вошёл в нижние 88% экрана (одноразово)
-      if (r.top < vh * 0.88 && r.bottom > 0) { el.classList.add('in'); return false }
-      return true
-    })
-    if (!pending.length) {
-      window.removeEventListener('scroll', onScroll, true)
-      window.removeEventListener('resize', onScroll)
-    }
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries)
+          e.target.classList.toggle('in', e.isIntersecting)
+      },
+      { threshold: 0, rootMargin: '-8% 0px -8% 0px' },
+    )
+    els.forEach(el => io.observe(el))
+    onBeforeUnmount(() => io.disconnect())
   }
-  const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(reveal) } }
-  // capture:true — ловим скролл и от внутренних контейнеров/iframe
-  window.addEventListener('scroll', onScroll, { passive: true, capture: true })
-  window.addEventListener('resize', onScroll, { passive: true })
-  reveal()
-  // Страховка: что бы ни случилось, через 2.5с показываем всё оставшееся
-  setTimeout(() => { pending.forEach(el => el.classList.add('in')); pending = [] }, 2500)
+  else {
+    els.forEach(el => el.classList.add('in'))
+  }
 })
 
 const tr = {
@@ -1303,10 +1293,10 @@ const penalties = computed(() => r.value.penalties)
   .block--goal { grid-template-columns: 1fr; gap: 14px; }
   .goal__text p { margin-bottom: 0; }
 
-  /* Система даунов — фото в колонку и крупнее */
-  .downs-media { grid-template-columns: 1fr; gap: 18px; margin-top: 24px; justify-items: stretch; }
+  /* Система даунов — судья и индикаторы стоят в один ряд, фото компактнее */
+  .downs-media { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; align-items: center; justify-items: center; }
   .downs-photo { max-width: 100%; }
-  .downs-gear img { max-width: 260px; }
+  .downs-gear img { max-width: 100%; }
   .downs { gap: 8px; margin-top: 18px; }
   .down { min-width: 64px; padding: 11px; }
   .down__n { font-size: 1.5rem; }

@@ -94,50 +94,82 @@ onMounted(() => {
     els.forEach(el => el.classList.add('in'))
   }
 
-  // Шапка плавно уходит в тень при скролле вниз
-  const hero = document.querySelector<HTMLElement>('.about-hero')
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (hero && !reduce) {
-    const onScroll = () => {
-      const p = Math.min(window.scrollY / 560, 1)
-      hero.style.opacity = String(1 - p)
-      hero.style.transform = `translateY(${(-window.scrollY * 0.16).toFixed(1)}px)`
+
+  // ===== Кино-интро: прокрутка проявляет лого из-под чёрных кино-полос,
+  // увеличивает и растворяет. Показываем при каждой загрузке/обновлении страницы;
+  // при prefers-reduced-motion — пропуск.
+  const cine = document.querySelector<HTMLElement>('.cine')
+  if (cine) {
+    if (reduce) {
+      cine.classList.add('is-skipped')
     }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
+    else {
+      const overlay = cine.querySelector<HTMLElement>('.cine__overlay')
+      const bg = cine.querySelector<HTMLElement>('.cine__bg')
+      const logo = cine.querySelector<HTMLElement>('.cine__logo')
+      const glow = cine.querySelector<HTMLElement>('.cine__glow')
+      const barTop = cine.querySelector<HTMLElement>('.cine__bar--top')
+      const barBot = cine.querySelector<HTMLElement>('.cine__bar--bottom')
+      const hint = cine.querySelector<HTMLElement>('.cine__hint')
+      const onCine = () => {
+        const dist = window.innerHeight * 1.4 // сколько скролла занимает интро
+        const t = Math.min(Math.max(window.scrollY / dist, 0), 1)
+        // лого: сразу видно (чуть притушено) → УВЕЛИЧИВАЕТСЯ (зум) → растворяется,
+        // сквозь него проявляется контент под оверлеем
+        let o = 1
+        if (t < 0.1) o = 0.6 + (t / 0.1) * 0.4
+        else if (t > 0.5) o = Math.max(0, 1 - (t - 0.5) / 0.42)
+        if (logo) {
+          logo.style.opacity = String(o)
+          logo.style.transform = `scale(${(0.9 + t * 2.6).toFixed(3)})` // зум до ~3.5
+        }
+        if (glow) glow.style.opacity = String(Math.max(0, o) * 0.85)
+        // чёрный фон гаснет → текст проявляется сквозь зумящееся лого
+        if (bg) bg.style.opacity = String(t < 0.38 ? 1 : Math.max(0, 1 - (t - 0.38) / 0.62))
+        // кино-полосы раскрываются
+        const barH = Math.max(0, 22 * (1 - Math.min(t / 0.5, 1)))
+        if (barTop) barTop.style.height = `${barH}%`
+        if (barBot) barBot.style.height = `${barH}%`
+        // подсказка scroll гаснет
+        if (hint) hint.style.opacity = String(Math.max(0, 1 - t / 0.12))
+        // к концу оверлей отключаем, чтобы не мешал
+        if (overlay) overlay.style.visibility = t >= 1 ? 'hidden' : 'visible'
+      }
+      window.addEventListener('scroll', onCine, { passive: true })
+      window.addEventListener('resize', onCine, { passive: true })
+      onCine()
+      onBeforeUnmount(() => {
+        window.removeEventListener('scroll', onCine)
+        window.removeEventListener('resize', onCine)
+      })
+    }
   }
 
-  // Лого-заставка (только мобилка): прозрачность и наезд ведёт прогресс прокрутки
-  // сквозь закреплённый блок — проявляется из черноты, держится, растворяется.
-  const stage = document.querySelector<HTMLElement>('.logo-stage')
-  const stagePin = stage?.querySelector<HTMLElement>('.logo-stage__pin') ?? null
-  const stageImg = stage?.querySelector<HTMLElement>('.logo-stage__img') ?? null
-  if (stage && stagePin && stageImg) {
-    const onStage = () => {
-      const rect = stage.getBoundingClientRect()
-      // Блок скрыт на десктопе (height 0) — ничего не делаем
-      if (rect.height < 1) return
-      const vh = window.innerHeight
-      const travel = rect.height - vh
-      if (travel <= 0) return
-      const t = Math.min(Math.max(-rect.top / travel, 0), 1) // 0..1 прогресс сквозь блок
-      // fade-in [0..0.32] → держится [0.32..0.68] → fade-out [0.68..1]
-      let o = 1
-      if (t < 0.32) o = t / 0.32
-      else if (t > 0.68) o = 1 - (t - 0.68) / 0.32
-      o = reduce ? 1 : Math.min(Math.max(o, 0), 1)
-      stagePin.style.opacity = String(o) // ореол гаснет вместе с лого
-      // медленный кино-наезд: лёгкое увеличение за весь проход
-      const sc = reduce ? 1 : 1 + t * 0.08
-      stageImg.style.transform = `scale(${sc.toFixed(3)})`
+  // Шапка плавно уходит в тень при скролле — относительно собственного положения
+  // (надёжно при наличии кино-интро сверху)
+  const hero = document.querySelector<HTMLElement>('.about-hero')
+  if (hero && !reduce) {
+    const docTop = (el: HTMLElement | null) => {
+      let y = 0
+      let n: HTMLElement | null = el
+      while (n) { y += n.offsetTop; n = n.offsetParent as HTMLElement | null }
+      return y
     }
-    window.addEventListener('scroll', onStage, { passive: true })
-    window.addEventListener('resize', onStage, { passive: true })
-    onStage()
+    let heroTop = docTop(hero)
+    const onScroll = () => {
+      const past = Math.max(0, window.scrollY - heroTop)
+      const p = Math.min(past / 560, 1)
+      hero.style.opacity = String(1 - p)
+      hero.style.transform = `translateY(${(-past * 0.16).toFixed(1)}px)`
+    }
+    const onResize = () => { heroTop = docTop(hero); onScroll() }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onResize, { passive: true })
+    onScroll()
     onBeforeUnmount(() => {
-      window.removeEventListener('scroll', onStage)
-      window.removeEventListener('resize', onStage)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onResize)
     })
   }
 })
@@ -145,6 +177,20 @@ onMounted(() => {
 
 <template>
   <main class="about">
+    <!-- Кино-интро: лого под чёрными кино-полосами + «scroll»; по скроллу
+         раскрывается, увеличивается и растворяется. Один раз за сессию (JS). -->
+    <div class="cine" aria-hidden="true">
+      <div class="cine__runway" />
+      <div class="cine__overlay">
+        <div class="cine__bg" />
+        <div class="cine__bar cine__bar--top" />
+        <div class="cine__bar cine__bar--bottom" />
+        <div class="cine__glow" />
+        <img src="/logo-aff.webp" alt="" class="cine__logo">
+        <div class="cine__hint"><span>Scroll</span><i /></div>
+      </div>
+    </div>
+
     <!-- Шапка раздела: текст выезжает слева, логотип — справа, встают рядом -->
     <header class="about-hero">
       <div class="about-hero__text">
@@ -156,15 +202,6 @@ onMounted(() => {
         <img src="/logo-aff.webp" alt="American Football Federation of Georgia" class="about-hero__logo">
       </figure>
     </header>
-
-    <!-- Только мобилка: лого-заставка. Лого закреплено по центру экрана (sticky)
-         и проявляется из черноты как логотип в начале фильма: fade-in → держится
-         → fade-out, с медленным наездом. Прозрачность ведёт скролл (JS). -->
-    <div class="logo-stage" aria-hidden="true">
-      <div class="logo-stage__pin">
-        <img src="/logo-aff.webp" alt="" class="logo-stage__img">
-      </div>
-    </div>
 
     <article class="prose">
       <section>
@@ -464,7 +501,9 @@ onMounted(() => {
 .about {
   position: relative;
   color: rgba(255, 255, 255, 0.82);
-  padding: clamp(120px, 14vh, 180px) clamp(20px, 6vw, 48px) 120px;
+  /* верхний отступ перенесён в .about-hero — чтобы кино-интро начиналось от
+     самого верха; боковой/нижний остаются */
+  padding: 0 clamp(20px, 6vw, 48px) 120px;
   background: transparent;
 }
 
@@ -473,6 +512,7 @@ onMounted(() => {
   position: relative;
   max-width: 1040px;
   margin: 0 auto 88px;
+  padding-top: clamp(120px, 14vh, 180px);
   display: grid;
   grid-template-columns: 1.12fr 0.88fr;
   align-items: center;
@@ -518,9 +558,89 @@ onMounted(() => {
   50% { opacity: 1; transform: scale(1.05); }
 }
 
-/* ===== Мобильная «заставка»: лого эпично проявляется из чёрного при скролле.
-   На десктопе не нужна (там герб в шапке), поэтому скрыта. ===== */
-.logo-stage { display: none; }
+/* ===== Кино-интро: лого увеличивается (зум) и растворяется, сквозь него
+   проявляется контент. Раннвей даёт скролл, оверлей фиксирован поверх контента. */
+.cine { position: relative; z-index: 2; }
+.cine.is-skipped { display: none; }
+.cine__runway { height: 140vh; } /* запас прокрутки под интро */
+.cine__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40; /* поверх контента, под навбаром */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* Чёрный фон сцены — JS гасит его, открывая контент сквозь зум */
+.cine__bg { position: absolute; inset: 0; z-index: 0; background: #000; }
+/* Чёрные кино-полосы сверху/снизу — JS раскрывает их высоту к нулю */
+.cine__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 22%;
+  background: #000;
+  z-index: 3;
+  pointer-events: none;
+}
+.cine__bar--top { top: 0; box-shadow: 0 16px 34px rgba(0, 0, 0, 0.9); }
+.cine__bar--bottom { bottom: 0; box-shadow: 0 -16px 34px rgba(0, 0, 0, 0.9); }
+/* Золотой ореол за лого */
+.cine__glow {
+  position: absolute;
+  z-index: 1;
+  width: min(92vw, 620px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(230, 200, 102, 0.3),
+    rgba(201, 168, 76, 0.08) 45%,
+    transparent 68%);
+  filter: blur(26px);
+  opacity: 0;
+  pointer-events: none;
+}
+.cine__logo {
+  position: relative;
+  z-index: 2;
+  width: min(72vw, 460px);
+  height: auto;
+  opacity: 0.6;
+  transform: scale(0.9);
+  transform-origin: center;
+  filter: brightness(1.12) drop-shadow(0 0 34px rgba(230, 200, 102, 0.4));
+  will-change: opacity, transform;
+}
+.cine__hint {
+  position: absolute;
+  bottom: 7vh;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  text-transform: uppercase;
+}
+.cine__hint i {
+  width: 16px;
+  height: 16px;
+  border-right: 2px solid rgba(230, 200, 102, 0.85);
+  border-bottom: 2px solid rgba(230, 200, 102, 0.85);
+  transform: rotate(45deg);
+  animation: cineChev 1.6s ease-in-out infinite;
+}
+@keyframes cineChev {
+  0%, 100% { transform: translateY(0) rotate(45deg); opacity: 0.5; }
+  50% { transform: translateY(5px) rotate(45deg); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .cine__hint i { animation: none; } }
 .about-hero h1 {
   margin: 0 0 24px;
   font-family: 'Oswald', 'Noto Serif Georgian', sans-serif;
@@ -991,46 +1111,9 @@ onMounted(() => {
   /* Отодвигаем текст и год-метки от оси-таймлайна, чтобы не липли к линии */
   .prose section { padding-left: 24px; }
 
-  /* ===== Лого-заставка: закреплено по центру экрана, проявляется из черноты
-     как логотип в начале фильма (прозрачность и наезд ведёт JS по прокрутке) ===== */
-  .logo-stage {
-    display: block;
-    position: relative;
-    height: 200vh; /* запас прокрутки: fade-in → держится → fade-out */
-    margin: 10px 0;
-  }
-  .logo-stage__pin {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0; /* стартуем из черноты; значение ведёт JS */
-  }
-  /* Золотой ореол за лого */
-  .logo-stage__pin::before {
-    content: "";
-    position: absolute;
-    width: min(94vw, 460px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle,
-      rgba(230, 200, 102, 0.3),
-      rgba(201, 168, 76, 0.1) 44%,
-      transparent 68%);
-    filter: blur(22px);
-    pointer-events: none;
-  }
-  .logo-stage__img {
-    position: relative;
-    z-index: 1;
-    width: min(80vw, 360px);
-    height: auto;
-    transform-origin: center;
-    filter: brightness(1.12) drop-shadow(0 0 34px rgba(230, 200, 102, 0.35));
-    will-change: transform;
-  }
+  /* Кино-интро на телефоне — лого чуть меньше */
+  .cine__logo { width: min(80vw, 360px); }
+  .cine__bar { height: 18%; }
 }
 
 /* Уважаем системную настройку «меньше движения» — показываем сразу, без анимации */
