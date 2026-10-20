@@ -382,8 +382,11 @@ function onImgUp() {
   z-index: 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)),
-    url('/gold-brush-bg.webp') center center / cover no-repeat;
+    radial-gradient(120% 95% at 50% 50%,
+      rgba(0, 0, 0, 0.62) 0%,
+      rgba(0, 0, 0, 0.46) 48%,
+      rgba(0, 0, 0, 0.24) 100%),
+    url('/luxury-bg.webp') center center / cover no-repeat;
 }
 /* Весь контент блока — над фон-слоём */
 .below-hero > :not(.grunge-bg) {
@@ -594,6 +597,18 @@ function onImgUp() {
   73% { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .scroll-arrow { animation: none; } }
+/* Десктоп: подсказку Scroll показываем внизу по центру hero (поверх контента),
+   в дополнение к кнопкам слева. На мобиле она живёт в потоке кнопок (ниже). */
+@media (min-width: 901px) {
+  .scroll-hint {
+    display: inline-flex;
+    position: absolute;
+    left: 50%;
+    bottom: 3vh;
+    transform: translateX(-50%);
+    z-index: 3;
+  }
+}
 
 .hero-btn {
   display: inline-flex;
