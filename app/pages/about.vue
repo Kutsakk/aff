@@ -1,3 +1,13 @@
+<script lang="ts">
+// Флаг «кино-интро уже проигрывалось». Живёт на уровне модуля — то есть весь
+// жизненный цикл загруженного JS-бандла. Сбрасывается ТОЛЬКО при реальной
+// перезагрузке страницы (F5 / прямой заход / hard reload), а при SPA-навигации
+// между разделами сохраняется. Так заставка играет при обновлении страницы, но
+// НЕ при возврате в «О нас» из других разделов. Пишется только на клиенте
+// (внутри onMounted), поэтому безопасно при SSR.
+let cinePlayed = false
+</script>
+
 <script setup lang="ts">
 // О нас — история как рассказ: зигзаг-таймлайн, текст/фото выезжают при скролле.
 useHead({ title: 'О нас — American Football Federation of Georgia' })
@@ -97,14 +107,16 @@ onMounted(() => {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   // ===== Кино-интро: прокрутка проявляет лого из-под чёрных кино-полос,
-  // увеличивает и растворяет. Показываем при каждой загрузке/обновлении страницы;
-  // при prefers-reduced-motion — пропуск.
+  // увеличивает и растворяет. Показываем один раз на загрузку документа —
+  // при реальной перезагрузке/прямом заходе, но НЕ при SPA-возврате в раздел
+  // (см. cinePlayed). При prefers-reduced-motion — пропуск.
   const cine = document.querySelector<HTMLElement>('.cine')
   if (cine) {
-    if (reduce) {
+    if (reduce || cinePlayed) {
       cine.classList.add('is-skipped')
     }
     else {
+      cinePlayed = true
       const overlay = cine.querySelector<HTMLElement>('.cine__overlay')
       const bg = cine.querySelector<HTMLElement>('.cine__bg')
       const logo = cine.querySelector<HTMLElement>('.cine__logo')
@@ -182,7 +194,8 @@ onMounted(() => {
     <div class="about-bg" aria-hidden="true" />
 
     <!-- Кино-интро: лого под чёрными кино-полосами + «scroll»; по скроллу
-         раскрывается, увеличивается и растворяется. Один раз за сессию (JS). -->
+         раскрывается, увеличивается и растворяется. Играет при загрузке/
+         обновлении страницы, но не при SPA-возврате в раздел (JS, cinePlayed). -->
     <div class="cine" aria-hidden="true">
       <div class="cine__runway" />
       <div class="cine__overlay">

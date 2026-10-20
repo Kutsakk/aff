@@ -235,7 +235,7 @@ function onImgUp() {
   <!-- Кто мы + цифры -->
   <section class="intro" :style="isDesktop ? blockStyle : undefined">
     <div class="intro__figure" aria-hidden="true">
-      <img src="/trophy-cup.webp" class="intro__trophy" :style="figureStyle" alt="" aria-hidden="true" loading="lazy" decoding="async">
+      <img src="/georgia-flag-brush.webp" class="intro__flag" alt="" aria-hidden="true" loading="lazy" decoding="async">
     </div>
 
     <div class="intro__text">
@@ -390,18 +390,17 @@ function onImgUp() {
   position: relative;
   z-index: 1;
 }
-/* На узком портретном экране — отдельная вертикальная версия картинки
-   (повёрнутый кроп): золото по краям и углам, центр тёмный. cover без повтора,
-   цельная композиция — никакого тайлинга. */
+/* На телефоне — отдельный фон: чёрный с золотым halftone-паттерном (дуги точек)
+   в правом-верхнем и левом-нижнем углах. Вертикальная картинка (~9:16) под
+   портретный экран, поэтому cover даёт равномерный масштаб без искажения —
+   дуги остаются круглыми. Закреплён к вьюпорту: углы сидят в углах экрана как
+   «рамка» и не двигаются при скролле. */
 @media (max-width: 860px) {
   .grunge-bg {
-    /* position: absolute (не fixed): на мобильных fixed-фон дёргается при
-       скролле из-за сворачивания адресной строки. absolute скроллится вместе
-       с контентом — без рывков. Вертикальный кроп растянут на всю высоту. */
-    position: absolute;
+    position: fixed;
     background:
-      linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.58)),
-      url('/gold-brush-bg-mobile.webp') center top / 100% 100% no-repeat;
+      url('/home-bg-mobile.webp') center center / cover no-repeat,
+      #000;
   }
 }
 
@@ -708,14 +707,22 @@ function onImgUp() {
   z-index: 0;
   pointer-events: none;
 }
-/* Трофей-кубок — отдельный <img>, управляется из панели (размер, сдвиги, блики).
-   Привязан к правому краю и центру по вертикали; остальное задаёт :style. */
-.intro__trophy {
+/* Акварельный мазок флага Грузии — главный визуал блока вместо трофея.
+   Прижат вправо (где был кубок), по центру по вертикали. Левый край растворён
+   маской, чтобы белая часть флага не перебивала текст в левой колонке. */
+.intro__flag {
   position: absolute;
-  right: 0;
-  top: 50%;
+  top: 42%;
+  left: 50%;
+  width: min(74%, 880px);
   height: auto;
-  will-change: transform, filter;
+  transform: translate(-50%, -50%);
+  opacity: 0.48;
+  pointer-events: none;
+  /* По центру блока: оба края растворяем, чтобы белая часть флага не перебивала
+     текст слева и мягко уходила справа. */
+  -webkit-mask: linear-gradient(90deg, transparent 0%, #000 30%, #000 72%, transparent 100%);
+  mask: linear-gradient(90deg, transparent 0%, #000 30%, #000 72%, transparent 100%);
 }
 
 .intro__text,
@@ -1197,26 +1204,28 @@ function onImgUp() {
     padding-top: clamp(56px, 9vh, 90px);
     min-height: auto; /* на телефоне одна колонка — фикс. высота не нужна */
   }
-  /* Стадион (PNG с прозрачным фоном) сверху + лёгкое затемнение только под
-     заголовком. Плотная чёрная подложка убрана, чтобы золотой grunge-фон был
-     виден под блоком (как в остальных секциях). Стадион чуть ярче. */
+  /* Акварельный флаг Грузии фоном секции сверху + лёгкое затемнение под
+     заголовком (читаемость). Мазок горизонтальный — показываем по центру
+     сверху, не на всю ширину, чтобы края растворялись в тёмный фон. */
   .intro__figure {
     background:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.28) 34%, rgba(0, 0, 0, 0) 58%),
-      url('/trophy-cup.webp');
-    background-repeat: no-repeat, no-repeat;
-    background-size: cover, 96% auto;
-    background-position: center, center top 60%;
-    filter: brightness(1.12) saturate(1.08);
-    opacity: 1;
+      url('/georgia-flag-brush.webp');
+    background-repeat: no-repeat;
+    background-size: 150% auto;
+    /* Флаг проявляется в середине блока — за цифрами 2011 / 15+ */
+    background-position: center 48%;
+    opacity: 0.5;
+    /* Окно по вертикали: виден только в зоне цифр, сверху и снизу растворяется */
+    -webkit-mask: linear-gradient(180deg, transparent 22%, #000 36%, #000 58%, transparent 72%);
+    mask: linear-gradient(180deg, transparent 22%, #000 36%, #000 58%, transparent 72%);
   }
   .stat b { font-size: 2.4rem; }
   .stat--bsb .stat__logo { width: 120px !important; }
   .stat--ifaf .stat__mark { height: 70px !important; transform: none !important; }
 
-  /* Трофей на мобильном рисуется фоном секции (.intro__figure). Отдельную
-     картинку-кубок скрываем, иначе кубок/стадион двоится. */
-  .intro__trophy { display: none !important; }
+  /* Флаг на мобильном рисуется фоном секции (.intro__figure). Отдельную
+     картинку-мазок скрываем, иначе флаг двоится. */
+  .intro__flag { display: none !important; }
 
   /* Компактные отступы: на телефоне vh-паддинги раздувались в огромные
      чёрные пустоты между секциями. Делаем плотно, «как десктоп, но мельче». */
