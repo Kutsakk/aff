@@ -131,8 +131,15 @@ onMounted(() => {
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(
       (entries) => {
-        for (const e of entries)
-          e.target.classList.toggle('in', e.isIntersecting)
+        // Одноразовый reveal: появился — остаётся. Двусторонний toggle на
+        // мобильных «мигал» на дрожащей границе (адресная строка меняет
+        // высоту вьюпорта → observer пере-срабатывает).
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('in')
+            io.unobserve(e.target)
+          }
+        }
       },
       { threshold: 0, rootMargin: '-8% 0px -8% 0px' },
     )
@@ -583,7 +590,14 @@ const penalties = computed(() => r.value.penalties)
   .rules-bg-layer {
     display: block;
     position: fixed;
-    inset: 0;
+    /* высоту фиксируем к большому вьюпорту, чтобы при скрытии адресной
+       строки на телефоне фон не «зумился» (cover не пересчитывался) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    height: 100vh;
+    height: 100lvh;
     z-index: 0;
     pointer-events: none;
     background:
@@ -604,7 +618,14 @@ const penalties = computed(() => r.value.penalties)
   .rules-bg-layer {
     display: block;
     position: fixed;
-    inset: 0;
+    /* высоту фиксируем к большому вьюпорту, чтобы при скрытии адресной
+       строки на телефоне фон не «зумился» (cover не пересчитывался) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    height: 100vh;
+    height: 100lvh;
     z-index: 0;
     pointer-events: none;
     /* Порядок слоёв сверху вниз: растворение левого/правого края в чёрный,

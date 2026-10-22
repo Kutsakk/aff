@@ -380,7 +380,14 @@ function onImgUp() {
    золотые мазки по краям картинки видны на любом экране — и на телефоне. */
 .grunge-bg {
   position: fixed;
-  inset: 0;
+  /* высоту фиксируем к большому вьюпорту, чтобы при скрытии адресной
+     строки на телефоне фон не «зумился» (cover не пересчитывался) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: auto;
+  height: 100vh;
+  height: 100lvh;
   z-index: 0;
   pointer-events: none;
   background:
