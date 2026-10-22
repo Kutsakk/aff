@@ -301,6 +301,9 @@ const faq = computed(() => p.value.faq)
 
 <template>
   <main class="play">
+    <!-- Фон страницы (только десктоп): золотые крылья на чёрном, края ярче,
+         центр притушён под текст. Зафиксирован к вьюпорту. -->
+    <div class="play-bg" aria-hidden="true" />
     <header class="hero">
       <span class="kicker">{{ p.kicker }}</span>
       <h1>{{ p.h1 }}</h1>
@@ -412,9 +415,63 @@ const faq = computed(() => p.value.faq)
 
 <style scoped>
 .play {
+  position: relative;
   background: transparent;
   color: rgba(255, 255, 255, 0.82);
   padding: clamp(120px, 14vh, 180px) clamp(20px, 6vw, 48px) 120px;
+}
+
+/* Фон «Играть» — только десктоп. Края растворяются в чёрный (без шва),
+   общий центр притушён, золото крыльев по бокам подсвечено. */
+.play-bg { display: none; }
+/* Мобилка: вертикальная версия крыльев (золото рамкой сверху/снизу),
+   центр притушён под текст, края ярче. */
+@media (max-width: 900px) {
+  .play-bg {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(74% 58% at 50% 50%,
+        rgba(0, 0, 0, 0.72) 0%,
+        rgba(0, 0, 0, 0.5) 46%,
+        rgba(0, 0, 0, 0.12) 76%,
+        rgba(0, 0, 0, 0) 100%),
+      url('/play-bg-wings-v.webp') center center / cover no-repeat,
+      #000;
+    filter: brightness(1.18) saturate(1.12);
+  }
+  .play > :not(.play-bg) {
+    position: relative;
+    z-index: 1;
+  }
+}
+@media (min-width: 901px) {
+  .play-bg {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 0) 95%, #000 100%),
+      linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0) 4%, rgba(0, 0, 0, 0) 96%, #000 100%),
+      radial-gradient(115% 100% at 50% 50%,
+        rgba(0, 0, 0, 0.72) 0%,
+        rgba(0, 0, 0, 0.5) 42%,
+        rgba(0, 0, 0, 0.12) 72%,
+        rgba(0, 0, 0, 0) 100%),
+      url('/play-bg-wings.webp') center center / cover no-repeat;
+    /* края ярче: светлит только золото, чёрные слои остаются чёрными */
+    filter: brightness(1.2) saturate(1.14);
+  }
+  /* Весь контент страницы — над фон-слоём */
+  .play > :not(.play-bg) {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .hero { max-width: 820px; margin: 0 auto 48px; text-align: center; }

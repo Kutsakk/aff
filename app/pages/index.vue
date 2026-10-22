@@ -194,29 +194,31 @@ function onImgUp() {
           width="188px"
           face-gradient="linear-gradient(145deg, #6b4e1b 0%, #2a1f0b 42%, #000000 100%)"
         />
-        <!-- Подсказка «листай вниз» — только на телефоне (вместо «Правил»).
-             Без плашки: слово SCROLL + наэлектризованная стрелка (SVG-фильтр
-             с турбулентным искажением краёв даёт эффект электрического разряда). -->
-        <div class="scroll-hint" aria-hidden="true">
-          <span>Scroll</span>
-          <svg class="scroll-arrow" viewBox="0 0 44 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <filter id="scrollElectric" x="-80%" y="-80%" width="260%" height="260%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.02 0.06" numOctaves="2" seed="3" result="noise">
-                  <animate attributeName="seed" values="1;7;3;9;2;6;1" dur="0.45s" repeatCount="indefinite" />
-                </feTurbulence>
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" result="disp" />
-                <feGaussianBlur in="disp" stdDeviation="1.3" result="glow" />
-                <feMerge>
-                  <feMergeNode in="glow" />
-                  <feMergeNode in="disp" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M6 9 L22 22 L38 9" stroke="#ffe9a8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#scrollElectric)" />
-          </svg>
-        </div>
       </div>
+    </div>
+
+    <!-- Подсказка «листай вниз». Прямой ребёнок .hero (вне сдвигаемого
+         hero-content), чтобы на десктопе центрироваться точно по центру экрана.
+         Без плашки: слово SCROLL + наэлектризованная стрелка (SVG-фильтр
+         с турбулентным искажением краёв даёт эффект электрического разряда). -->
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <svg class="scroll-arrow" viewBox="0 0 44 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="scrollElectric" x="-80%" y="-80%" width="260%" height="260%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.02 0.06" numOctaves="2" seed="3" result="noise">
+              <animate attributeName="seed" values="1;7;3;9;2;6;1" dur="0.45s" repeatCount="indefinite" />
+            </feTurbulence>
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" result="disp" />
+            <feGaussianBlur in="disp" stdDeviation="1.3" result="glow" />
+            <feMerge>
+              <feMergeNode in="glow" />
+              <feMergeNode in="disp" />
+            </feMerge>
+          </filter>
+        </defs>
+        <path d="M6 9 L22 22 L38 9" stroke="#ffe9a8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#scrollElectric)" />
+      </svg>
     </div>
 
   </section>
@@ -383,10 +385,13 @@ function onImgUp() {
   pointer-events: none;
   background:
     radial-gradient(120% 95% at 50% 50%,
-      rgba(0, 0, 0, 0.62) 0%,
-      rgba(0, 0, 0, 0.46) 48%,
-      rgba(0, 0, 0, 0.24) 100%),
-    url('/luxury-bg.webp') center center / cover no-repeat;
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.32) 46%,
+      rgba(0, 0, 0, 0) 100%),
+    url('/home-bg-midnight.webp') center center / cover no-repeat;
+  /* края ярче: brightness/saturate светлит только золото — чёрные
+     затемнители (0,0,0) при умножении остаются чёрными */
+  filter: brightness(1.22) saturate(1.14);
 }
 /* Весь контент блока — над фон-слоём */
 .below-hero > :not(.grunge-bg) {
@@ -402,7 +407,11 @@ function onImgUp() {
   .grunge-bg {
     position: fixed;
     background:
-      url('/home-bg-mobile.webp') center center / cover no-repeat,
+      radial-gradient(72% 56% at 50% 50%,
+        rgba(0, 0, 0, 0.58) 0%,
+        rgba(0, 0, 0, 0.3) 52%,
+        rgba(0, 0, 0, 0) 100%),
+      url('/home-bg-midnight-v.webp') center center / cover no-repeat,
       #000;
   }
 }
@@ -559,6 +568,11 @@ function onImgUp() {
    Без плашки: слово SCROLL + наэлектризованная золотая стрелка. */
 .scroll-hint {
   display: none;
+  position: absolute;
+  left: 50%;
+  bottom: 3.4vh;
+  transform: translateX(-50%);
+  z-index: 3;
   flex-direction: column;
   align-items: center;
   gap: 7px;
@@ -597,16 +611,13 @@ function onImgUp() {
   73% { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .scroll-arrow { animation: none; } }
-/* Десктоп: подсказку Scroll показываем внизу по центру hero (поверх контента),
-   в дополнение к кнопкам слева. На мобиле она живёт в потоке кнопок (ниже). */
+/* Десктоп: подсказку Scroll показываем по центру экрана, приподнятой над низом
+   (по разметке пользователя — красный кружок). Теперь это прямой ребёнок .hero,
+   поэтому left:50% — честный центр экрана, не зависит от сдвига заголовка. */
 @media (min-width: 901px) {
   .scroll-hint {
     display: inline-flex;
-    position: absolute;
-    left: 50%;
-    bottom: 3vh;
-    transform: translateX(-50%);
-    z-index: 3;
+    bottom: 9vh;
   }
 }
 
@@ -1210,7 +1221,8 @@ function onImgUp() {
   .hero-actions { align-items: center; }
   /* на мобильном кнопки центрированы — внутренний отступ симметричен, сдвиг не нужен */
   .hero-actions :deep(.eb) { margin-left: 0; }
-  /* На телефоне убираем «Правила», вместо неё — подсказка «Scroll ↓» */
+  /* На телефоне убираем кнопку «Правила»; подсказка «Scroll ↓» показывается
+     отдельным слоем внизу по центру экрана (см. базовые стили .scroll-hint). */
   .hero-actions :deep(.mbtn) { display: none; }
   .scroll-hint { display: inline-flex; }
   .intro {

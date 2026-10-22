@@ -535,8 +535,13 @@ onMounted(() => {
   z-index: 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.42)),
-    url('/about-bg.webp') center center / cover no-repeat;
+    radial-gradient(110% 90% at 50% 50%,
+      rgba(0, 0, 0, 0.5) 0%,
+      rgba(0, 0, 0, 0.3) 48%,
+      rgba(0, 0, 0, 0) 100%),
+    url('/about-bg-lux.webp') center center / cover no-repeat;
+  /* края ярче: светлит только золото, чёрные затемнители остаются чёрными */
+  filter: brightness(1.2) saturate(1.12);
 }
 /* Весь контент раздела — над фон-слоём */
 .about-hero,
@@ -1135,12 +1140,11 @@ onMounted(() => {
   .about-bg {
     background:
       /* притушить центр (где текст), оставив бока с золотой линией яркими */
-      radial-gradient(72% 58% at 50% 48%,
-        rgba(0, 0, 0, 0.62) 0%,
-        rgba(0, 0, 0, 0.3) 52%,
-        rgba(0, 0, 0, 0) 84%),
-      linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.28)),
-      url('/about-bg-v.webp') center center / cover no-repeat;
+      radial-gradient(70% 56% at 50% 50%,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.28) 52%,
+        rgba(0, 0, 0, 0) 100%),
+      url('/about-bg-lux-v.webp') center center / cover no-repeat;
   }
   .about-hero {
     grid-template-columns: 1fr;

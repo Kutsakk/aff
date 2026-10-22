@@ -328,6 +328,9 @@ const penalties = computed(() => r.value.penalties)
 
 <template>
   <main class="rules">
+    <!-- Фон страницы (только десктоп): приглушённые золото-чёрные мазки.
+         Зафиксирован к вьюпорту и сильно затемнён — не мешает чтению. -->
+    <div class="rules-bg-layer" aria-hidden="true" />
     <header class="hero" :style="heroStyle">
       <div class="hero__text">
         <h1>{{ r.h1 }}</h1>
@@ -565,11 +568,66 @@ const penalties = computed(() => r.value.penalties)
 
 <style scoped>
 .rules {
+  position: relative;
   background: transparent;
   color: rgba(255, 255, 255, 0.82);
   padding: clamp(120px, 14vh, 180px) clamp(20px, 6vw, 48px) 120px;
   /* выезд reveal-элементов за край не должен давать горизонтальный скролл */
   overflow-x: clip;
+}
+/* Фон всей страницы — только десктоп. Затемнён, чтобы текст читался. */
+.rules-bg-layer { display: none; }
+/* Мобилка: вертикальная версия футуристического фона (золото рамкой
+   сверху/снизу), центр притушён под текст, края ярче. */
+@media (max-width: 900px) {
+  .rules-bg-layer {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(72% 56% at 50% 50%,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.3) 52%,
+        rgba(0, 0, 0, 0) 100%),
+      url('/rules-bg-futuro-v.webp') center center / cover no-repeat,
+      #000;
+    filter: brightness(1.18) saturate(1.12);
+  }
+  .rules > :not(.rules-bg-layer) {
+    position: relative;
+    z-index: 1;
+  }
+}
+@media (min-width: 901px) {
+  .rules-bg-layer {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    /* Порядок слоёв сверху вниз: растворение левого/правого края в чёрный,
+       растворение верхнего/нижнего края, лёгкое затемнение, само фото.
+       Края фото уходят в чистый #000 — швов на кромке экрана не видно.
+       Фон тёмный техно (золотые линии + карбон-сетка) — читаемость высокая,
+       затемнение слабое, чтобы золотые акценты оставались видны. */
+    background:
+      linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 0) 95%, #000 100%),
+      linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0) 4%, rgba(0, 0, 0, 0) 96%, #000 100%),
+      radial-gradient(110% 95% at 50% 50%,
+        rgba(0, 0, 0, 0.42) 0%,
+        rgba(0, 0, 0, 0.26) 48%,
+        rgba(0, 0, 0, 0) 100%),
+      url('/rules-bg-futuro.webp') center center / cover no-repeat;
+    /* края ярче: светлит только золото, чёрные слои остаются чёрными */
+    filter: brightness(1.2) saturate(1.14);
+  }
+  /* Весь контент страницы — над фоновым слоем */
+  .rules > :not(.rules-bg-layer) {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 /* Hero с фоновым фото: доска слева (под текст) + мяч справа.
@@ -1265,13 +1323,36 @@ const penalties = computed(() => r.value.penalties)
   .rules { padding: clamp(88px, 13vh, 110px) 16px 64px; }
 
   /* Hero */
-  .hero { min-height: 210px; padding: 30px 18px; }
+  .hero { min-height: 300px; padding: 30px 18px; }
   .hero h1 { font-size: clamp(1.7rem, 7.6vw, 2.2rem); margin-bottom: 14px; }
   .lead { font-size: 0.98rem; line-height: 1.5; }
+  /* На телефоне фото (доска + мел + мяч) заполняет весь hero как фон-баннер:
+     отменяем «масштаб/сдвиг/растворение» из редактора (они под десктоп) и
+     делаем cover с мягкими краями. Мяч справа — позицию чуть правее центра. */
+  .hero::before {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    transform: none;
+    background: url('/rules-hero.webp') center center / contain no-repeat;
+    -webkit-mask:
+      linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask:
+      linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+    mask-composite: intersect;
+  }
+  /* Затемнение умеренное — фото проступает, текст читается за счёт тени ниже */
   .hero::after {
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.6) 46%, rgba(0, 0, 0, 0.86) 100%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.74) 0%, rgba(0, 0, 0, 0.5) 42%, rgba(0, 0, 0, 0.46) 66%, rgba(0, 0, 0, 0.78) 100%);
   }
   .hero__text { max-width: none; }
+  /* Читаемость поверх фото */
+  .hero .lead { text-shadow: 0 2px 10px rgba(0, 0, 0, 0.92), 0 1px 3px rgba(0, 0, 0, 0.9); }
   .video-cta { margin-top: 16px; font-size: 0.8rem; padding: 9px 16px 9px 11px; }
 
   /* Меньше воздуха, компактнее текст */

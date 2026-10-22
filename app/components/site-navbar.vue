@@ -13,7 +13,6 @@ const nav = computed<NavItem[]>(() => [
   { label: t.value.nav.rules, to: '/rules' },
   { label: t.value.nav.play, to: '/play' },
   { label: t.value.nav.events, to: '/events' },
-  { label: t.value.nav.teams, to: '/teams' },
 ])
 
 const ctaLabel = computed(
