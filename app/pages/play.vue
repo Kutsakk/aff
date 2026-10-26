@@ -1185,6 +1185,27 @@ const framedTackle = computed(() => false)
 
 /* Планшет/мобилка: фото уходит за текст как полупрозрачный акцент в углу */
 @media (max-width: 900px) {
+  /* ПРОИЗВОДИТЕЛЬНОСТЬ: backdrop-filter(blur), fixed-фон с filter,
+     анимированный бордер и drop-shadow пересчитываются каждый кадр и
+     жёстко тормозят скролл/ввод на телефонах. Убираем их, вид оставляем
+     близким через плотный полупрозрачный фон. */
+  .play-bg { filter: none; }
+  .panel,
+  .join__card {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .panel {
+    background: linear-gradient(145deg, rgba(22, 22, 26, 0.72), rgba(12, 12, 15, 0.58));
+  }
+  .join__card {
+    background:
+      radial-gradient(120% 100% at 50% 0%, rgba(201, 168, 76, 0.09), transparent 60%),
+      rgba(13, 13, 17, 0.8);
+  }
+  .join__card::before { animation: none; }
+  .panel__player { filter: none; }
+
   .panel__inner,
   .panel--has-media .panel__inner { grid-template-columns: 1fr; }
   /* списки в один столбец — чтобы фото справа не перекрывало текст */
