@@ -492,6 +492,13 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 /* ===== Адаптив ===== */
 @media (max-width: 860px) {
   .pill { display: none; }
+  /* верхняя полоса без blur — backdrop-filter пересчитывается при каждом
+     скролле и тормозит на телефонах; плотный градиент заменяет размытие */
+  .nav-wrap::before {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.97) 0%, rgba(0, 0, 0, 0.8) 45%, rgba(0, 0, 0, 0) 100%);
+  }
   .burger { display: flex; }
   /* Лого и бургер были прижаты к самому верху — опускаем ниже */
   .nav-wrap { top: 30px; }

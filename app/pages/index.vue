@@ -420,6 +420,8 @@ function onImgUp() {
         rgba(0, 0, 0, 0) 100%),
       url('/home-bg-midnight-v.webp') center center / cover no-repeat,
       #000;
+    /* без filter: на мобилке пересчёт по фиксированному фону тормозит скролл */
+    filter: none;
   }
 }
 

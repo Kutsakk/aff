@@ -1152,6 +1152,8 @@ onMounted(() => {
         rgba(0, 0, 0, 0.28) 52%,
         rgba(0, 0, 0, 0) 100%),
       url('/about-bg-lux-v.webp') center center / cover no-repeat;
+    /* без filter: на мобилке пересчёт по фиксированному фону тормозит скролл */
+    filter: none;
   }
   .about-hero {
     grid-template-columns: 1fr;

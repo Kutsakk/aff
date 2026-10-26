@@ -205,5 +205,7 @@ const meta = computed(() => [
 @media (max-width: 880px) {
   .ev { grid-template-columns: 1fr; }
   .ev__poster { order: -1; max-width: 460px; margin: 0 auto; }
+  /* без blur на мобилке — backdrop-filter тормозит скролл */
+  .ev__meta { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(28, 24, 16, 0.5); }
 }
 </style>

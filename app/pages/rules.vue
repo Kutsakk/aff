@@ -607,7 +607,8 @@ const penalties = computed(() => r.value.penalties)
         rgba(0, 0, 0, 0) 100%),
       url('/rules-bg-futuro-v.webp') center center / cover no-repeat,
       #000;
-    filter: brightness(1.18) saturate(1.12);
+    /* без filter: на мобилке пересчёт по фиксированному фону тормозит скролл */
+    filter: none;
   }
   .rules > :not(.rules-bg-layer) {
     position: relative;
