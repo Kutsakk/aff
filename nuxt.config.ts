@@ -2,6 +2,13 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  // Серверные секреты (не попадают на клиент). Значения — из env NUXT_*.
+  runtimeConfig: {
+    supabaseUrl: '',
+    supabaseServiceKey: '',
+    telegramBotToken: '',
+    telegramChatId: '',
+  },
   modules: ['@nuxt/ui', '@nuxt/fonts'],
   css: ['~/assets/css/main.css'],
   fonts: {
