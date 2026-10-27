@@ -4,7 +4,7 @@ export const LOCALES: Locale[] = ['ka', 'ru', 'en']
 
 const messages = {
   ka: {
-    nav: { home: 'მთავარი', about: 'ჩვენს შესახებ', rules: 'წესები', play: 'დაიწყე თამაში', events: 'ღონისძიებები' },
+    nav: { home: 'მთავარი', about: 'ჩვენს შესახებ', rules: 'წესები', play: 'დაიწყე თამაში', coaches: 'მწვრთნელობა', events: 'ღონისძიებები' },
     cta: 'დაგვიკავშირდით',
     home: {
       // Название федерации — бренд, не переводим ни на один язык
@@ -66,7 +66,7 @@ const messages = {
     },
   },
   ru: {
-    nav: { home: 'Главная', about: 'О нас', rules: 'Правила', play: 'Начать играть', events: 'События' },
+    nav: { home: 'Главная', about: 'О нас', rules: 'Правила', play: 'Начать играть', coaches: 'Стать тренером', events: 'События' },
     cta: 'Связаться',
     home: {
       heroLine1: 'American Football',
@@ -127,7 +127,7 @@ const messages = {
     },
   },
   en: {
-    nav: { home: 'Home', about: 'About', rules: 'Rules', play: 'Start playing', events: 'Events' },
+    nav: { home: 'Home', about: 'About', rules: 'Rules', play: 'Start playing', coaches: 'Coaching', events: 'Events' },
     cta: 'Get in touch',
     home: {
       heroLine1: 'American Football',

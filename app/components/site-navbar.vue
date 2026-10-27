@@ -12,6 +12,7 @@ const nav = computed<NavItem[]>(() => [
   { label: t.value.nav.about, to: '/about' },
   { label: t.value.nav.rules, to: '/rules' },
   { label: t.value.nav.play, to: '/play' },
+  { label: t.value.nav.coaches, to: '/coaches' },
   { label: t.value.nav.events, to: '/events' },
 ])
 
@@ -281,17 +282,20 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 
 /* ===== Ссылки ===== */
 .links {
-  display: flex;
+  /* Сетка из равных колонок: каждый пункт центрирован в своей ячейке,
+     поэтому при смене языка текст пункта меняет длину, но соседи НЕ
+     сдвигаются — навбар не «скачет». Ширина фикс — пилюля на месте. */
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   align-items: center;
-  /* center + постоянный gap: пробелы между ссылками не «перетекают»
-     при смене языка, а фикс. ширина держит пилюлю на месте */
-  justify-content: center;
-  gap: clamp(4px, 1vw, 10px);
-  width: 740px;
+  gap: 2px;
+  width: 880px;
 }
 .link {
   position: relative;
-  padding: 7px 14px;
+  justify-self: center;
+  text-align: center;
+  padding: 7px 12px;
   border-radius: 999px;
   font-size: 0.86rem;
   font-weight: 500;
@@ -398,7 +402,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 /* Фикс. ширина CTA под самый длинный язык (ka) — хвост не меняет
    размер при смене языка, поэтому пилюля не прыгает */
 .pill .cta {
-  min-width: 190px;
+  min-width: 210px;
   justify-content: center;
 }
 .cta svg { width: 14px; height: 14px; transition: transform 0.2s ease; }
@@ -490,7 +494,9 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 .drop-leave-to { opacity: 0; transform: translateY(-8px); }
 
 /* ===== Адаптив ===== */
-@media (max-width: 860px) {
+/* Порог 1100px: с 6 пунктами + язык + CTA пилюля перестаёт влезать на
+   средних экранах, поэтому ниже этой ширины уходим в бургер-меню. */
+@media (max-width: 1100px) {
   .pill { display: none; }
   /* верхняя полоса без blur — backdrop-filter пересчитывается при каждом
      скролле и тормозит на телефонах; плотный градиент заменяет размытие */
